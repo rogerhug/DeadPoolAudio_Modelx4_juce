@@ -25,9 +25,15 @@ dann einfach weiter drücken ,kein haltepunkt im releasemodus
 
 du brauchst
 für win https://visualstudio.microsoft.com/de/vs/
+
+
 für mac https://xcodereleases.com/
+
+
             
 und juce um den c++ code zu generieren
+
+
 
 https://juce.com/get-juce/download
 
@@ -36,6 +42,9 @@ mit dem projucer vers(6.08)aktuell die jucer datei öffnen
 und die app rendern....und los
 
 grüsse
+
 r-hug@gmx.ch
+
+
 https://soundcloud.com/r7-records
 
