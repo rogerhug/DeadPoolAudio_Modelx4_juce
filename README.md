@@ -24,6 +24,8 @@ das plugin leuft einwandfrei die app hat einen haltepunkt im debugmodus(clamp01v
 dann einfach weiter drücken ,kein haltepunkt im releasemodus
 
 du brauchst
+
+
 für win https://visualstudio.microsoft.com/de/vs/
 
 
