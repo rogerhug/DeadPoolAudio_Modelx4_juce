@@ -33,7 +33,7 @@ für mac https://xcodereleases.com/
 
 
             
-und juce um den c++ code zu generieren
+und juce um das c++ startproject zu generieren
 
 
 
