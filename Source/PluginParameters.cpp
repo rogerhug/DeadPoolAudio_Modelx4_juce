@@ -1368,7 +1368,7 @@ PluginParameters::PluginParameters(AudioProcessorValueTreeState& vts)
     mainSqLenghtValue=16;
     mainWaveValue=10;
     mainPitchValue=1;
-    mainDelayValue=0.05;
+    mainDelayValue=0.5;
     mainVolumeValue=0.7;
     
     mainLfoSelectValue=0;
