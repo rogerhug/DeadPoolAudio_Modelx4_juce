@@ -20,8 +20,8 @@ https://drive.google.com/file/d/1Uec3QTvAOiCVzHkrpRRN-TnqCX0LiVg7/view?usp=shari
 
 ******************************************************************************************************************
 
-das plugin leuft einwandfrei die app hat einen haltepunkt im debugmodus(clamp01value)
-dann einfach weiter drücken ,kein haltepunkt im releasemodus
+das plugin leuft einwandfrei die app auch
+
 
 du brauchst
 
