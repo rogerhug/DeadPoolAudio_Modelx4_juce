@@ -9,7 +9,27 @@ and Xcode::mac // vs2019::windows
 
 
 
-![dpn1](https://user-images.githubusercontent.com/13609732/147674408-cd3d933a-6047-4dfd-8858-4d88c57055ac.PNG)
+
+![t1](https://user-images.githubusercontent.com/13609732/147684963-9524a1ec-362e-4144-9182-f8dbb790218f.PNG)
 
 
 latest build windows10 Vst3 /app
+
+
+download Windows setup here::
+
+https://drive.google.com/file/d/1Remimfagt1zBcenBQ_ycZo3PYGMijf8u/view?usp=sharing
+
+thats install the the App , Vst3 Plugin ,SampelBank,PresetFolder
+
+include 30 DrumPresets.and more >2000.wav. the First Start with this plugIn in the host //(reaper etc)creates a VST3 Preset Folder
+in C:/yourName/Documents..
+copy this Presets from C:Public/Documents/hebeisen.soft/prests in this Folder..C:/yourName/Documents/VST3Presets/
+and load from your vst3 host...
+
+first test i think all right?
+
+cheeers r-hug@gmx.ch
+
+
+
