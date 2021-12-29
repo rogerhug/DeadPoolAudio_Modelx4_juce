@@ -34,7 +34,7 @@ public:
     NewProjectAudioProcessorEditor (NewProjectAudioProcessor& p);
     ~NewProjectAudioProcessorEditor()
     {
-        parameters.detachControls();
+       // parameters.detachControls();//---------******##########  not function Vst3
      
     }
  
