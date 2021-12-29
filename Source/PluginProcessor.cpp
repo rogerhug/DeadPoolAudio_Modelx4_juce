@@ -1,0 +1,1117 @@
+/*
+  ==============================================================================
+
+    This file contains the basic framework code for a JUCE plugin processor.
+
+  ==============================================================================
+*/
+
+#include "PluginProcessor.h"
+#include "PluginEditor.h"
+
+//==============================================================================
+NewProjectAudioProcessor::NewProjectAudioProcessor()
+#ifndef JucePlugin_PreferredChannelConfigurations
+     : AudioProcessor (BusesProperties()
+                     #if ! JucePlugin_IsMidiEffect
+                      #if ! JucePlugin_IsSynth
+                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+                      #endif
+                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+                     #endif
+                       )
+
+, valueTreeState(*this,&undoManager)
+
+, parameters(valueTreeState)
+
+//,urls(valueTreeState)
+#endif
+
+{
+    
+   
+      
+    
+    parameters.createAllParameters();
+   // urls.createAllParameters(); 
+
+   // stepperWave.InitPatternSteps(0,1,3);
+    valueTreeState.state = ValueTree(Identifier(JucePlugin_Name));
+
+    ApVst = false;//----->AppMode if true Vst Mode
+
+    Rtime=new TimerSq();
+
+    meterOut = 0;
+    mPrev = 0;
+    bin = new binaryFiles();
+ 
+    buff1=new double[SP_BUFFERS];
+    
+    bin2 = new binaryFiles();
+
+    buff2=new double[SP_BUFFERS];
+    
+    bin3 = new binaryFiles();
+
+    buff3=new double[SP_BUFFERS];
+    
+    bin4 = new binaryFiles();
+
+    buff4=new double[SP_BUFFERS];
+
+
+    bin5 = new binaryFiles();
+
+    buff5 = new double[SP_BUFFERS];
+
+    bin6 = new binaryFiles();
+
+    buff6 = new double[SP_BUFFERS];
+
+    bin7 = new binaryFiles();
+
+    buff7 = new double[SP_BUFFERS];
+    
+    for(int i=0;i<SP_BUFFERS;i++)
+    {
+        buff1[i]=0;
+        buff2[i]=0;
+        buff3[i]=0;
+        buff4[i]=0;
+        buff5[i] = 0;
+        buff6[i] = 0;
+        buff7[i] = 0;
+        
+    }
+    
+
+
+    read1=new int[10];
+
+    for(int i=0;i<10;i++)
+    {
+
+
+        read1[i]=0;
+    }
+    
+    equalizer=new equ3_cModelClass();
+    equalizer->initialize();
+    limiter=new limiter_cModelClass();
+    limiter->initialize();
+    buffFx=new double[SP_BUFFERS];
+    //btc=new bitcrush_c();
+    compm.initialize();
+    phaselfo = 0;
+    phaselfoD = 0;
+    phaselfoC = 0;
+    steppers = new double * [16];
+    for (int i = 0; i < 10; i++)
+    {
+        steppers[i] = new double[16];
+        for (int n = 0; n < 16; n++)
+        {
+            steppers[i][n] = 0.5;
+        }
+    }
+}
+
+NewProjectAudioProcessor::~NewProjectAudioProcessor()
+{
+}
+
+//==============================================================================
+const juce::String NewProjectAudioProcessor::getName() const
+{
+    return JucePlugin_Name;
+}
+
+bool NewProjectAudioProcessor::acceptsMidi() const
+{
+   #if JucePlugin_WantsMidiInput
+    return true;
+   #else
+    return false;
+   #endif
+}
+
+bool NewProjectAudioProcessor::producesMidi() const
+{
+   #if JucePlugin_ProducesMidiOutput
+    return true;
+   #else
+    return false;
+   #endif
+}
+
+bool NewProjectAudioProcessor::isMidiEffect() const
+{
+   #if JucePlugin_IsMidiEffect
+    return true;
+   #else
+    return false;
+   #endif
+}
+
+double NewProjectAudioProcessor::getTailLengthSeconds() const
+{
+    return 0.0;
+}
+
+int NewProjectAudioProcessor::getNumPrograms()
+{
+    return 10;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
+                // so this should be at least 1, even if you're not really implementing programs.
+}
+
+int NewProjectAudioProcessor::getCurrentProgram()
+{
+    return 0;
+}
+
+void NewProjectAudioProcessor::setCurrentProgram (int index)
+{
+}
+
+const juce::String NewProjectAudioProcessor::getProgramName (int index)
+{
+   
+    return {};
+}
+
+void NewProjectAudioProcessor::changeProgramName (int index, const juce::String& newName)
+{
+}
+
+//==============================================================================
+void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+{
+    // Use this method as the place to do any pre-playback
+    // initialisation that you need..
+    meterV.meterIn(0.0);
+    sp1.reset();
+    sp2.reset();
+    sp3.reset();
+    sp4.reset();
+    sp5.reset();
+    sp6.reset();
+    sp7.reset();
+  
+    for(int i=0;i<SP_BUFFERS;i++)
+    {
+        buff1[i]=0;
+        buff2[i]=0;
+        buff3[i]=0;
+        buff4[i]=0;
+        buff5[i] = 0;
+        buff6[i] = 0;
+        buff7[i] = 0;
+        buffFx[i]=0;
+        
+    }
+   
+}
+
+void NewProjectAudioProcessor::releaseResources()
+{
+    // When playback stops, you can use this as an opportunity to free up any
+    // spare memory, etc.
+}
+
+#ifndef JucePlugin_PreferredChannelConfigurations
+bool NewProjectAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+{
+  #if JucePlugin_IsMidiEffect
+    juce::ignoreUnused (layouts);
+    return true;
+  #else
+    // This is the place where you check if the layout is supported.
+    // In this template code we only support mono or stereo.
+    // Some plugin hosts, such as certain GarageBand versions, will only
+    // load plugins that support stereo bus layouts.
+    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
+     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+        return false;
+
+    // This checks if the input layout matches the output layout
+   #if ! JucePlugin_IsSynth
+    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+        return false;
+   #endif
+
+    return true;
+  #endif
+}
+
+#endif
+inline double fastClip(double x, double low, double high)
+{
+    double x1 = fabs(x - low);
+    double x2 = fabs(x - high);
+    x = x1 + low + high - x2;
+    
+    return x * 0.5;
+}
+inline int minmaxSPP(int a) {
+    int result = 0; result = a;
+    if (result > 23) { result = 23; }
+    if (result < 0) { result = 0; }
+    return result;
+}
+
+void NewProjectAudioProcessor::setMainStepper(double *in,int n,int mode)
+{  
+    for (int i = 0; i < 16; i++)
+    {
+        steppers[n][i] = in[i];
+    }
+}
+
+void NewProjectAudioProcessor::mStepper()
+{
+
+  
+    if (sp1.mp.mSampleStepperOn == true) { //********************SYNTH1********************************
+
+    
+      if (sp1.mp.mEngineMode == true) {//----------------------synth1-pitch------------------------------
+        
+            if (sp1.mp.mSampleStepperMode == 1) {
+                sp1.oscillator.setStepperPitch(steppers[0][Rtime->timeSw1(parameters.TimerModeV.getIndex())[0]]);
+            }
+            if (sp1.mp.mSampleStepperMode == 4) {
+
+                sp1.mp.setStepperVolume(steppers[0][Rtime->timeSw1(parameters.TimerModeV.getIndex())[0]]);
+            }
+        
+        }
+     
+        if (sp1.mp.mEngineMode == false) { // ********************Audio1*********************************
+
+            if (sp1.mp.mSampleStepperMode == 0) {//----------sp1-wave--------------------------------
+               
+                /*
+              const int vw = steppers[0][Rtime->timeSw1(parameters.TimerModeV.getIndex())[0]] * 24 - 12;
+
+          if (sp1.mp.setStepperWaveCheck((steppers[0][Rtime->timeSw1(parameters.TimerModeV.getIndex())[0] ] * 24) - 12,
+                                 (steppers[0][Rtime->timeSw1(parameters.TimerModeV.getIndex())[0] + 1] * 24) - 12) == true
+                                   && Rtime->timeSw1(parameters.TimerModeV.getIndex())[2] < 200) {                    
+
+                        bin->loadWaveFile(urls.getUrl1V()[sp1.mp.mSampleN + vw].getValue().toString().getCharPointer(), 1);
+                        memcpy(sp1.mAudioToResample2, bin->getSample(), bin->setSampelFix(wavesize[0]) * sizeof(double));
+                        sp1.loadfile(bin->setSampelFix(wavesize[0])); 
+        }
+        */
+       }
+        if (sp1.mp.mSampleStepperMode == 1) {  //-------------sp1-pitch-----------------------------
+                sp1.mp.PichStepper(steppers[0][Rtime->timeSw1(parameters.TimerModeV.getIndex())[0]]);  }
+
+
+        if (sp1.mp.mSampleStepperMode == 4) {//-------------------volume
+
+            sp1.mp.setStepperVolume(steppers[0][Rtime->timeSw1(parameters.TimerModeV.getIndex())[0]]);
+     
+      } 
+    }
+
+       
+        if (sp1.mp.mSampleStepperMode == 2) { //------------Slot-delayMix-------------------------
+            sp1.echo->setDelayMixStepper(steppers[0][Rtime->timeSw1(parameters.TimerModeV.getIndex())[0]]);
+        }
+             
+        if (sp1.mp.mSampleStepperMode == 3) {  //------------Slot-lfotime--------------------------
+            sp1.oscillator.setFrequencyLfoStepper(steppers[0][Rtime->timeSw1(parameters.TimerModeV.getIndex())[0]]);
+         
+        }
+        
+
+    }
+
+    if (sp2.mp.mSampleStepperOn == true) { //********************SYNTH2********************************
+
+
+
+        if (sp2.mp.mEngineMode == true) {//----------------------synth2-pitch------------------------------
+
+            if (sp2.mp.mSampleStepperMode == 1) {
+                sp2.oscillator.setStepperPitch(steppers[1][Rtime->timeSw2(parameters.TimerModeV.getIndex())[0]]);
+            }
+            if (sp2.mp.mSampleStepperMode == 4) {
+
+                sp2.mp.setStepperVolume(steppers[1][Rtime->timeSw2(parameters.TimerModeV.getIndex())[0]]);
+            }
+        }
+
+        if (sp2.mp.mEngineMode == false) { // ********************Audio2*********************************
+
+            if (sp2.mp.mSampleStepperMode == 0) {//----------sp2-wave--------------------------------
+                /*
+                const int vw2 = steppers[1][Rtime->timeSw2(parameters.TimerModeV.getIndex())[0]] * 24 - 12;
+
+                if (sp2.mp.setStepperWaveCheck((steppers[1][Rtime->timeSw2(parameters.TimerModeV.getIndex())[0]] * 24) - 12,
+                    (steppers[1][Rtime->timeSw2(parameters.TimerModeV.getIndex())[0] + 1] * 24) - 12) == true
+                    && Rtime->timeSw2(parameters.TimerModeV.getIndex())[2] < 200) {
+
+                    bin2->loadWaveFile(urls.getUrl2V()[sp2.mp.mSampleN + vw2].getValue().toString().getCharPointer(), 1);
+                    memcpy(sp2.mAudioToResample2, bin2->getSample(), bin2->setSampelFix(wavesize[1]) * sizeof(double));
+                    sp2.loadfile(bin2->setSampelFix(wavesize[1]));
+                }
+                */
+            }
+                if (sp2.mp.mSampleStepperMode == 1) {  //-------------sp2-pitch-----------------------------
+                    sp2.mp.PichStepper(steppers[1][Rtime->timeSw2(parameters.TimerModeV.getIndex())[0]]);
+                }
+
+              if (sp2.mp.mSampleStepperMode == 4) {//-------------------volume
+                      sp2.mp.setStepperVolume(steppers[1][Rtime->timeSw2(parameters.TimerModeV.getIndex())[0]]);
+                   }
+            }
+
+
+            if (sp2.mp.mSampleStepperMode == 2) { //------------Slot-delayMix-------------------------
+                sp2.echo->setDelayMixStepper(steppers[1][Rtime->timeSw2(parameters.TimerModeV.getIndex())[0]]);
+            }
+
+            if (sp2.mp.mSampleStepperMode == 3) {  //------------Slot-lfotime--------------------------
+                sp2.oscillator.setFrequencyLfoStepper(steppers[1][Rtime->timeSw2(parameters.TimerModeV.getIndex())[0]]);
+            }
+           
+
+    }
+
+    if (sp3.mp.mSampleStepperOn == true) { //********************SYNTH3********************************
+
+
+
+        if (sp3.mp.mEngineMode == true) {//----------------------synth3-pitch------------------------------
+
+            if (sp3.mp.mSampleStepperMode == 1) {
+                sp3.oscillator.setStepperPitch(steppers[2][Rtime->timeSw3(parameters.TimerModeV.getIndex())[0]]);
+            }
+            if (sp3.mp.mSampleStepperMode == 4) {
+
+                sp3.mp.setStepperVolume(steppers[2][Rtime->timeSw3(parameters.TimerModeV.getIndex())[0]]);
+            }
+        }
+
+        if (sp3.mp.mEngineMode == false) { // ********************Audio3*********************************
+
+            if (sp3.mp.mSampleStepperMode == 0) {//----------sp3-wave--------------------------------
+                /*
+                const int vw3 = steppers[2][Rtime->timeSw3(parameters.TimerModeV.getIndex())[0]] * 24 - 12;
+
+                if (sp3.mp.setStepperWaveCheck((steppers[2][Rtime->timeSw3(parameters.TimerModeV.getIndex())[0]] * 24) - 12,
+                    (steppers[2][Rtime->timeSw3(parameters.TimerModeV.getIndex())[0] + 1] * 24) - 12) == true
+                    && Rtime->timeSw3(parameters.TimerModeV.getIndex())[2] < 200) {
+
+                    bin3->loadWaveFile(urls.getUrl3V()[sp3.mp.mSampleN + vw3].getValue().toString().getCharPointer(), 1);
+                    memcpy(sp3.mAudioToResample2, bin3->getSample(), bin3->setSampelFix(wavesize[2]) * sizeof(double));
+                    sp3.loadfile(bin3->setSampelFix(wavesize[2]));
+                }
+                */
+            }
+                if (sp3.mp.mSampleStepperMode == 1) {  //-------------sp3-pitch-----------------------------
+                    sp3.mp.PichStepper(steppers[2][Rtime->timeSw3(parameters.TimerModeV.getIndex())[0]]);
+                }
+               if (sp3.mp.mSampleStepperMode == 4) {
+                    sp3.mp.setStepperVolume(steppers[2][Rtime->timeSw3(parameters.TimerModeV.getIndex())[0]]);
+                    }
+            }
+
+
+            if (sp3.mp.mSampleStepperMode == 2) { //------------Slot-delayMix-------------------------
+                sp3.echo->setDelayMixStepper(steppers[2][Rtime->timeSw3(parameters.TimerModeV.getIndex())[0]]);
+            }
+
+            if (sp3.mp.mSampleStepperMode == 3) {  //------------Slot-lfotime--------------------------
+                sp3.oscillator.setFrequencyLfoStepper(steppers[2][Rtime->timeSw3(parameters.TimerModeV.getIndex())[0]]);
+            }
+               }
+
+    if (sp4.mp.mSampleStepperOn == true) { //********************SYNTH4********************************
+
+
+
+        if (sp4.mp.mEngineMode == true) {//----------------------synth4-pitch------------------------------
+
+            if (sp4.mp.mSampleStepperMode == 1) {
+                sp4.oscillator.setStepperPitch(steppers[3][Rtime->timeSw4(parameters.TimerModeV.getIndex())[0]]);
+            }
+            if (sp4.mp.mSampleStepperMode == 4) {
+
+                sp4.mp.setStepperVolume(steppers[3][Rtime->timeSw4(parameters.TimerModeV.getIndex())[0]]);
+            }
+        }
+
+        if (sp4.mp.mEngineMode == false) { // ********************Audio4*********************************
+
+            if (sp4.mp.mSampleStepperMode == 0) {//----------sp4-wave--------------------------------
+                /*
+                const int vw4 = steppers[3][Rtime->timeSw4(parameters.TimerModeV.getIndex())[0]] * 24 - 12;
+
+                if (sp4.mp.setStepperWaveCheck((steppers[3][Rtime->timeSw4(parameters.TimerModeV.getIndex())[0]] * 24) - 12,
+                    (steppers[3][Rtime->timeSw4(parameters.TimerModeV.getIndex())[0] + 1] * 24) - 12) == true
+                    && Rtime->timeSw4(parameters.TimerModeV.getIndex())[2] < 200) {
+
+                    bin4->loadWaveFile(urls.getUrl4V()[sp4.mp.mSampleN + vw4].getValue().toString().getCharPointer(), 1);
+                    memcpy(sp4.mAudioToResample2, bin4->getSample(), bin4->setSampelFix(wavesize[3]) * sizeof(double));
+                    sp4.loadfile(bin4->setSampelFix(wavesize[3]));
+                }
+                */
+            }
+                if (sp4.mp.mSampleStepperMode == 1) {  //-------------sp4-pitch-----------------------------
+                    sp4.mp.PichStepper(steppers[3][Rtime->timeSw4(parameters.TimerModeV.getIndex())[0]]);
+                }
+               if (sp4.mp.mSampleStepperMode == 4) {
+                   sp4.mp.setStepperVolume(steppers[3][Rtime->timeSw4(parameters.TimerModeV.getIndex())[0]]);
+                     }
+            }
+
+
+            if (sp4.mp.mSampleStepperMode == 2) { //------------Slot-delayMix-------------------------
+                sp4.echo->setDelayMixStepper(steppers[3][Rtime->timeSw4(parameters.TimerModeV.getIndex())[0]]);
+            }
+
+            if (sp4.mp.mSampleStepperMode == 3) {  //------------Slot-lfotime--------------------------
+                sp4.oscillator.setFrequencyLfoStepper(steppers[3][Rtime->timeSw4(parameters.TimerModeV.getIndex())[0]]);
+            }
+           
+
+    }
+
+
+    if (sp5.mp.mSampleStepperOn == true) { //********************SYNTH5********************************
+
+
+
+        if (sp5.mp.mEngineMode == true) {//----------------------synth5-pitch------------------------------
+
+            if (sp5.mp.mSampleStepperMode == 1) {
+                sp5.oscillator.setStepperPitch(steppers[4][Rtime->timeSw5(parameters.TimerModeV.getIndex())[0]]);
+            }
+            if (sp5.mp.mSampleStepperMode == 4) {
+
+                sp5.mp.setStepperVolume(steppers[4][Rtime->timeSw5(parameters.TimerModeV.getIndex())[0]]);
+            }
+        }
+
+        if (sp5.mp.mEngineMode == false) { // ********************Audio5*********************************
+
+            if (sp5.mp.mSampleStepperMode == 0) {//----------sp5-wave--------------------------------
+                /*
+                const int vw5 = steppers[4][Rtime->timeSw5(parameters.TimerModeV.getIndex())[0]] * 24 - 12;
+
+                if (sp5.mp.setStepperWaveCheck((steppers[4][Rtime->timeSw5(parameters.TimerModeV.getIndex())[0]] * 24) - 12,
+                    (steppers[4][Rtime->timeSw5(parameters.TimerModeV.getIndex())[0] + 1] * 24) - 12) == true
+                    && Rtime->timeSw5(parameters.TimerModeV.getIndex())[2] < 200) {
+
+                    bin5->loadWaveFile(urls.getUrl5V()[sp5.mp.mSampleN + vw5].getValue().toString().getCharPointer(), 1);
+                    memcpy(sp5.mAudioToResample2, bin5->getSample(), bin5->setSampelFix(wavesize[4]) * sizeof(double));
+                    sp5.loadfile(bin5->setSampelFix(wavesize[4]));
+                } 
+                */
+            }
+
+
+                if (sp5.mp.mSampleStepperMode == 1) {  //-------------sp5-pitch-----------------------------
+                    sp5.mp.PichStepper(steppers[4][Rtime->timeSw5(parameters.TimerModeV.getIndex())[0]]);
+                }
+                  if (sp5.mp.mSampleStepperMode == 4) {
+                      sp5.mp.setStepperVolume(steppers[4][Rtime->timeSw5(parameters.TimerModeV.getIndex())[0]]);
+                      }
+            }
+
+
+            if (sp5.mp.mSampleStepperMode == 2) { //------------Slot-delayMix-------------------------
+                sp5.echo->setDelayMixStepper(steppers[4][Rtime->timeSw5(parameters.TimerModeV.getIndex())[0]]);
+            }
+
+            if (sp5.mp.mSampleStepperMode == 3) {  //------------Slot-lfotime--------------------------
+                sp5.oscillator.setFrequencyLfoStepper(steppers[4][Rtime->timeSw5(parameters.TimerModeV.getIndex())[0]]);
+            }
+            
+
+    }
+    if (sp6.mp.mSampleStepperOn == true) { //********************SYNTH6********************************
+
+
+
+        if (sp6.mp.mEngineMode == true) {//----------------------synth6-pitch------------------------------
+
+            if (sp6.mp.mSampleStepperMode == 1) {
+                sp6.oscillator.setStepperPitch(steppers[5][Rtime->timeSw6(parameters.TimerModeV.getIndex())[0]]);
+            }
+            if (sp6.mp.mSampleStepperMode == 4) {
+
+                sp6.mp.setStepperVolume(steppers[5][Rtime->timeSw6(parameters.TimerModeV.getIndex())[0]]);
+            }
+        }
+
+        if (sp6.mp.mEngineMode == false) { // ********************Audio6*********************************
+
+            if (sp6.mp.mSampleStepperMode == 0) {//----------sp6-wave--------------------------------
+                /*
+                const int vw6 = steppers[5][Rtime->timeSw6(parameters.TimerModeV.getIndex())[0]] * 24 - 12;
+
+                if (sp6.mp.setStepperWaveCheck((steppers[5][Rtime->timeSw6(parameters.TimerModeV.getIndex())[0]] * 24) - 12,
+                    (steppers[5][Rtime->timeSw6(parameters.TimerModeV.getIndex())[0] + 1] * 24) - 12) == true
+                    && Rtime->timeSw6(parameters.TimerModeV.getIndex())[2] < 200) {
+
+                    bin6->loadWaveFile(urls.getUrl6V()[sp6.mp.mSampleN + vw6].getValue().toString().getCharPointer(), 1);
+                    memcpy(sp6.mAudioToResample2, bin6->getSample(), bin6->setSampelFix(wavesize[5]) * sizeof(double));
+                    sp6.loadfile(bin6->setSampelFix(wavesize[5]));
+                } 
+                */
+            }
+                if (sp6.mp.mSampleStepperMode == 1) {  //-------------sp6-pitch-----------------------------
+                    sp6.mp.PichStepper(steppers[5][Rtime->timeSw6(parameters.TimerModeV.getIndex())[0]]);
+                }
+                 if (sp6.mp.mSampleStepperMode == 4) {
+                     sp6.mp.setStepperVolume(steppers[5][Rtime->timeSw6(parameters.TimerModeV.getIndex())[0]]);
+                       }
+            }
+
+
+            if (sp6.mp.mSampleStepperMode == 2) { //------------Slot-delayMix-------------------------
+                sp6.echo->setDelayMixStepper(steppers[5][Rtime->timeSw6(parameters.TimerModeV.getIndex())[0]]);
+            }
+
+            if (sp6.mp.mSampleStepperMode == 3) {  //------------Slot-lfotime--------------------------
+                sp6.oscillator.setFrequencyLfoStepper(steppers[5][Rtime->timeSw6(parameters.TimerModeV.getIndex())[0]]);
+            }
+           
+
+    }
+    if (sp7.mp.mSampleStepperOn == true) { //********************SYNTH7********************************
+
+
+
+        if (sp7.mp.mEngineMode == true) {//----------------------synth7-pitch------------------------------
+
+            if (sp7.mp.mSampleStepperMode == 1) {
+                sp7.oscillator.setStepperPitch(steppers[6][Rtime->timeSw7(parameters.TimerModeV.getIndex())[0]]);
+            }
+            if (sp7.mp.mSampleStepperMode == 4) {
+
+                sp7.mp.setStepperVolume(steppers[6][Rtime->timeSw7(parameters.TimerModeV.getIndex())[0]]);
+            }
+        }
+
+        if (sp7.mp.mEngineMode == false) { // ********************Audio7*********************************
+
+            if (sp7.mp.mSampleStepperMode == 0) {//----------sp7-wave--------------------------------
+                /*
+                const int vw7 = steppers[6][Rtime->timeSw7(parameters.TimerModeV.getIndex())[0]] * 24 - 12;
+
+                if (sp7.mp.setStepperWaveCheck((steppers[6][Rtime->timeSw7(parameters.TimerModeV.getIndex())[0]] * 24) - 12,
+                    (steppers[6][Rtime->timeSw7(parameters.TimerModeV.getIndex())[0] + 1] * 24) - 12) == true
+                    && Rtime->timeSw7(parameters.TimerModeV.getIndex())[2] < 200) {
+
+                    bin7->loadWaveFile(urls.getUrl7V()[sp7.mp.mSampleN + vw7].getValue().toString().getCharPointer(), 1);
+                    memcpy(sp7.mAudioToResample2, bin7->getSample(), bin7->setSampelFix(wavesize[6]) * sizeof(double));
+                    sp7.loadfile(bin7->setSampelFix(wavesize[6]));
+                }
+                */
+            }
+                if (sp7.mp.mSampleStepperMode == 1) {  //-------------sp7-pitch-----------------------------
+                    sp7.mp.PichStepper(steppers[6][Rtime->timeSw7(parameters.TimerModeV.getIndex())[0]]);
+                }
+                if (sp7.mp.mSampleStepperMode == 4) {
+                    sp7.mp.setStepperVolume(steppers[6][Rtime->timeSw7(parameters.TimerModeV.getIndex())[0]]);
+                      }
+            }
+
+
+            if (sp7.mp.mSampleStepperMode == 2) { //------------Slot-delayMix-------------------------
+                sp7.echo->setDelayMixStepper(steppers[6][Rtime->timeSw7(parameters.TimerModeV.getIndex())[0]]);
+            }
+
+            if (sp7.mp.mSampleStepperMode == 3) {  //------------Slot-lfotime--------------------------
+                sp7.oscillator.setFrequencyLfoStepper(steppers[6][Rtime->timeSw7(parameters.TimerModeV.getIndex())[0]]);
+            }
+           
+
+    }
+}
+
+void NewProjectAudioProcessor::mainModLfo() {
+    
+ 
+    
+    if(parameters.mainLfoPitchAmValue>0.01)
+    phaselfo=(Rtime->mainLfoValue(sp1.oscillator.getSampleLfo()
+                    ,sp2.oscillator.getSampleLfo()
+                    ,sp3.oscillator.getSampleLfo()
+                    ,sp4.oscillator.getSampleLfo())*parameters.mainLfoPitchAmValue);
+    
+   
+    {
+    
+        if(sp1.mp.mEngineMode==true){sp1.oscillator.setLfoMainPitchSynth(1-phaselfo);}
+        if(sp1.mp.mEngineMode==false){sp1.mp.mMainSamplePitchMod= 1-phaselfo;}
+        if(sp2.mp.mEngineMode==true){sp2.oscillator.setLfoMainPitchSynth(phaselfo);}
+        if(sp2.mp.mEngineMode==false){sp2.mp.mMainSamplePitchMod= 1-phaselfo;}
+        if(sp3.mp.mEngineMode==true){sp3.oscillator.setLfoMainPitchSynth(phaselfo);}
+        if(sp3.mp.mEngineMode==false){sp3.mp.mMainSamplePitchMod= 1-phaselfo;}
+        if(sp4.mp.mEngineMode==true){sp4.oscillator.setLfoMainPitchSynth(phaselfo);}
+        if(sp4.mp.mEngineMode==false){sp4.mp.mMainSamplePitchMod= 1-phaselfo;}
+
+    
+    }
+     
+
+
+    
+   
+}
+
+void NewProjectAudioProcessor::loadAudioFile(File fileAudio, int m)
+{
+   
+    loadSample(m);
+}
+
+
+
+void NewProjectAudioProcessor::loadSampler1InitSet(int n)
+{
+    if(n>0)
+    urls.loadInit1(valueTreeState, n);
+    loadAudioFile(urls.getUrl1V()[sp1.mp.mSampleN].toString(), 0);
+
+}
+
+void NewProjectAudioProcessor::loadSampler2InitSet(int n)
+{
+    if (n > 0)
+    urls.loadInit2(valueTreeState, n);
+    loadAudioFile(urls.getUrl2V()[sp2.mp.mSampleN].toString(), 1);
+   
+}
+
+void NewProjectAudioProcessor::loadSampler3InitSet(int n)
+{
+    if (n > 0)
+    urls.loadInit3(valueTreeState, n);
+    loadAudioFile(urls.getUrl3V()[sp3.mp.mSampleN].toString(), 2);
+ 
+}
+
+void NewProjectAudioProcessor::loadSampler4InitSet(int n)
+{
+    if (n > 0)
+    urls.loadInit4(valueTreeState, n);
+    loadAudioFile(urls.getUrl4V()[sp4.mp.mSampleN].toString(), 3);
+   
+   
+}
+
+void NewProjectAudioProcessor::loadSampler5InitSet(int n)
+{
+    
+    if (n > 0)
+        urls.loadInit5(valueTreeState, n);
+    loadAudioFile(urls.getUrl5V()[sp5.mp.mSampleN].toString(), 4);
+    
+}
+
+void NewProjectAudioProcessor::loadSampler6InitSet(int n)
+{
+    
+    if (n > 0)
+        urls.loadInit6(valueTreeState, n);
+    loadAudioFile(urls.getUrl6V()[sp6.mp.mSampleN].toString(), 5);
+    
+}
+
+void NewProjectAudioProcessor::loadSampler7InitSet(int n)
+{
+    
+    if (n > 0)
+        urls.loadInit7(valueTreeState, n);
+    loadAudioFile(urls.getUrl7V()[sp7.mp.mSampleN].toString(), 6);
+    
+}
+
+
+
+
+void NewProjectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+{
+      double peakL = 0;
+    double peakR = 0;
+    
+    juce::ScopedNoDenormals noDenormals;
+    
+    if (setMidiCC(parameters.midiCCmodus.getIndex() ==1)) {
+        midiCC_(midiMessages);
+    }
+    //read1[1] = 0;
+    // read1[2] = MidiMsg.getControllerValue();
+    // read1[3] = smpPos;
+      
+
+    ignoreUnused(midiMessages);
+    updateCurrentTimeInfoFromHost();
+    auto totalNumInputChannels  = getTotalNumInputChannels();
+    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    int nFrames=buffer.getNumSamples();
+
+
+
+
+
+
+ Rtime->timerMainPhase();
+    read1[1] = parameters.midiCCmodus.getIndex();
+ Rtime->timerHost(lastPosInfo.ppqPosition,lastPosInfo.timeInSeconds) ;
+ 
+if(parameters.TimerModeV.getIndex()>0 && lastPosInfo.isPlaying==ApVst)
+    
+{
+  
+     mStepper();
+        mainModLfo();
+      
+    sp1.processOut(Rtime->timeSw1(parameters.TimerModeV.getIndex()),buff1,nFrames,read1);
+    
+    sp2.processOut(Rtime->timeSw2(parameters.TimerModeV.getIndex()),buff2,nFrames,read1);
+    sp3.processOut(Rtime->timeSw3(parameters.TimerModeV.getIndex()),buff3,nFrames,read1);
+    sp4.processOut(Rtime->timeSw4(parameters.TimerModeV.getIndex()),buff4,nFrames,read1);
+    
+    sp5.processOut(Rtime->timeSw5(parameters.TimerModeV.getIndex()), buff5, nFrames, read1);
+    sp6.processOut(Rtime->timeSw6(parameters.TimerModeV.getIndex()), buff6, nFrames, read1);
+    sp7.processOut(Rtime->timeSw7(parameters.TimerModeV.getIndex()), buff7, nFrames, read1);
+    
+  //  read1[0] =  Rtime->timeSw1(parameters.TimerModeV.getIndex())[0];
+  //  read1[1] =  Rtime->timeSw2(parameters.TimerModeV.getIndex())[0];
+    for (int so = 0; so < nFrames; so++)
+    {
+       // compm.step(buff1[so] + buff2[so] + buff3[so] + buff4[so] + buff5[so] + buff6[so] + buff7[so], 0, 1, 4, 0.05, 0.25, 0.0, buffFx[so]);
+      buffFx[so] = (buff1[so] + buff2[so] + buff3[so] + buff4[so]+ buff5[so] +buff6[so] +buff7[so] /**/);
+     // buffFx[so] = buff1[so];
+      
+        equalizer->step(buffFx[so], buffFx[so], read1);
+       //btc->bitcrush(buffFx[so], buffFx[so], read1[8]);
+        limiter->step(buffFx[so], buffFx[so]);
+
+    // In case we have more outputs than inputs, this code clears any output
+    // channels that didn't contain input data, (because these aren't
+    // guaranteed to be empty - they may contain garbage).
+    // This is here to avoid people getting screaming feedback
+    // when they first compile a plugin, but obviously you don't need to keep
+    // this code if your algorithm always overwrites all the output channels.
+
+        
+        for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+            //  buffer.clear (i, 0, buffer.getNumSamples());
+           
+            buffer.setSample(i, so, fastClip(buffFx[so], -1, 1));
+
+
+        
+       
+    }
+    peakL = fabs(*buffFx);
+    const double METER_ATTACK = 0.6, METER_DECAY = 0.05;
+    double xL = (peakL < mPrev ? METER_DECAY : METER_ATTACK);
+    peakL = peakL * xL + mPrev * (1.0 - xL);
+    mPrev = peakL;
+
+    meterV.meterIn(mPrev);
+
+            
+    
+     }
+        
+else
+    {
+        memset(buff1,0,nFrames*sizeof(double));
+        memset(buff2,0,nFrames*sizeof(double));
+        memset(buff3,0,nFrames*sizeof(double));
+        memset(buff4,0,nFrames*sizeof(double));
+        memset(buff5, 0, nFrames * sizeof(double));
+        memset(buff6, 0, nFrames * sizeof(double));
+        memset(buff7, 0, nFrames * sizeof(double));
+        memset(buffFx, 0, nFrames * sizeof(double));
+
+        for(int c=0;c< totalNumOutputChannels;++c)
+        buffer.clear (c, 0, buffer.getNumSamples());
+      
+    }
+  
+ 
+ 
+     
+    
+
+    
+}
+//==============================================================================
+bool NewProjectAudioProcessor::hasEditor() const
+{
+    return true; // (change this to false if you choose to not supply an editor)
+}
+
+juce::AudioProcessorEditor* NewProjectAudioProcessor::createEditor()
+{
+   // return new NewProjectAudioProcessorEditor (*this, valueTreeState);
+return new NewProjectAudioProcessorEditor (*this);
+}
+
+//==============================================================================
+void NewProjectAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+{
+    // You should use this method to store your parameters in the memory block.
+    // You could do that either as raw data, or use the XML or ValueTree classes
+    // as intermediaries to make it easy to save and load complex data.
+    
+    auto state = valueTreeState.copyState();
+    std::unique_ptr<XmlElement> xml (state.createXml());
+    copyXmlToBinary (*xml, destData);
+    
+
+    
+}
+
+void NewProjectAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+{
+    // You should use this method to restore your parameters from this memory block,
+    // whose contents will have been created by the getStateInformation() call.
+  
+    std::unique_ptr<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+  
+    if (xmlState.get() != nullptr)
+        if (xmlState->hasTagName(valueTreeState.state.getType()))
+        {
+            valueTreeState.replaceState(ValueTree::fromXml(*xmlState));
+            
+          
+             
+              trupdate=true;
+
+ }
+     
+    mStepper();
+    const int uur1 = parameters.Sp1Wnr;
+    const int uur2 = parameters.Sp2Wnr;
+    const int uur3 = parameters.Sp3Wnr;
+    const int uur4 = parameters.Sp4Wnr;
+    const int uur5 = parameters.Sp5Wnr;
+    const int uur6 = parameters.Sp6Wnr;
+    const int uur7 = parameters.Sp7Wnr;
+     
+
+     urls.unserial(valueTreeState,0);
+
+
+
+
+
+    loadAudioFile(urls.getUrl1V()[uur1].toString(), 0);
+    loadAudioFile(urls.getUrl2V()[uur2].toString(), 1);
+    loadAudioFile(urls.getUrl3V()[uur3].toString(), 2);
+    loadAudioFile(urls.getUrl4V()[uur4].toString(), 3);
+    loadAudioFile(urls.getUrl5V()[uur5].toString(), 4);
+    loadAudioFile(urls.getUrl6V()[uur6].toString(), 5);
+    loadAudioFile(urls.getUrl7V()[uur7].toString(), 6);
+   
+    loadSample(0);
+    loadSample(1);
+    loadSample(2);
+    loadSample(3);
+    loadSample(4);
+    loadSample(5);
+    loadSample(6);
+
+   
+ 
+
+}
+
+void NewProjectAudioProcessor::updateCurrentTimeInfoFromHost()
+{
+    if (auto* ph = getPlayHead())
+    {
+        AudioPlayHead::CurrentPositionInfo newTime;
+
+        if (ph->getCurrentPosition(newTime))
+        {
+            lastPosInfo = newTime;  // Successfully got the current time from the host..
+            return;
+        }
+    }
+
+    // If the host fails to provide the current time, we'll just reset our copy to a default..
+    lastPosInfo.resetToDefault();
+}
+double midiDataOut[60];
+void NewProjectAudioProcessor::midiCC_(juce::MidiBuffer& midiMessages)
+{
+    MidiBuffer::Iterator MidiItr(midiMessages);
+
+    MidiMessage MidiMsg; int smpPos;
+    
+    if (MidiItr.getNextEvent(MidiMsg, smpPos))
+    {
+
+        if (MidiMsg.isController()) {//---------------------------------------------------------------------check it is a controller change
+         
+         //---------------------------------Unused_midiparas::5-119: 
+            if (MidiMsg.getControllerNumber() == 3)
+            {   esp1.SampelVolume.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+              
+            }
+
+            if (MidiMsg.getControllerNumber() == 5)
+            {  esp2.SampelVolume.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));    }
+
+            if (MidiMsg.getControllerNumber() == 9)
+            {
+                esp3.SampelVolume.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 14)
+            {
+                esp4.SampelVolume.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 15)
+            {
+                esp5.SampelVolume.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 20)
+            {
+                esp6.SampelVolume.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 21)
+            {
+                esp7.SampelVolume.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            //------------------------------------------wavenRS-------------
+            if (MidiMsg.getControllerNumber() == 85)
+            {
+                esp1.SampelN1.setValue((((int)MidiMsg.getControllerValue()) / 127.0f)*71);
+
+              
+            }
+            if (MidiMsg.getControllerNumber() == 86)
+            {
+                esp2.SampelN1.setValue((((int)MidiMsg.getControllerValue()) / 127.0f)*71);
+               
+            }
+            if (MidiMsg.getControllerNumber() == 87)
+            {
+                esp3.SampelN1.setValue((((int)MidiMsg.getControllerValue()) / 127.0f)*71);
+            }
+            if (MidiMsg.getControllerNumber() == 88)
+            {
+                esp4.SampelN1.setValue((((int)MidiMsg.getControllerValue()) / 127.0f)*71);
+            }
+
+            if (MidiMsg.getControllerNumber() == 89)
+            {
+                esp5.SampelN1.setValue((((int)MidiMsg.getControllerValue()) / 127.0f)*71);
+            }
+            if (MidiMsg.getControllerNumber() == 90)
+            {
+                esp6.SampelN1.setValue((((int)MidiMsg.getControllerValue()) / 127.0f)*71.0);
+            }
+            if (MidiMsg.getControllerNumber() == 102)
+            {
+                esp7.SampelN1.setValue((((int)MidiMsg.getControllerValue()) / 127.0f)*71.0);
+            }
+            //------------------------------------------wavepITCH-------------
+
+        
+            if (MidiMsg.getControllerNumber() == 104)
+            {
+                esp1.SampelPitch.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 105)
+            {
+                esp2.SampelPitch.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 106)
+            {
+                esp3.SampelPitch.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 107)
+            {
+                esp4.SampelPitch.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 108)
+            {
+                esp5.SampelPitch.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 118)
+            {
+                esp6.SampelPitch.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 121)
+            {
+                esp7.SampelPitch.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 23)
+            {
+                esp1.DelayTime.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 24)
+            {
+                esp2.DelayTime.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 25)
+            {
+                esp3.DelayTime.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 26)
+            {
+                esp4.DelayTime.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 27)
+            {
+                esp5.DelayTime.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 28)
+            {
+                esp6.DelayTime.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 29)
+            {
+                esp7.DelayTime.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 119)
+            {
+          
+              mainp.mainPitchSlider.setValue((((float)MidiMsg.getControllerValue()) / 127.0f)+0.6);
+            }
+            if (MidiMsg.getControllerNumber() == 103)
+            {
+
+                mainp.mainDelaySlider.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+            if (MidiMsg.getControllerNumber() == 30)
+            {
+
+                mainp.mainVolSlider.setValue((((float)MidiMsg.getControllerValue()) / 127.0f));
+            }
+        }
+       
+       
+    
+    }
+  
+       
+    
+       
+
+}
+
+
+
+//==============================================================================
+// This creates new instances of the plugin..
+juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+{
+    return new NewProjectAudioProcessor();
+}

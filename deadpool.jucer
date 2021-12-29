@@ -2,8 +2,9 @@
 
 <JUCERPROJECT id="Ph1hBX" name="DeadPoolAudio_V2" projectType="audioplug" useAppConfig="1"
               addUsingNamespaceToJuceHeader="1" displaySplashScreen="1" jucerFormatVersion="1"
-              pluginCharacteristicsValue="pluginIsSynth" pluginManufacturer="hebeisen.soft"
-              maxBinaryFileSize="65536" companyName="hebeisen.soft" companyWebsite="https://github.com/rogerhug/DeadPool-V02_juce">
+              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              pluginManufacturer="hebeisen.soft" maxBinaryFileSize="65536"
+              companyName="hebeisen.soft" companyWebsite="https://github.com/rogerhug/DeadPool-V02_juce">
   <MAINGROUP id="HQzSpr" name="DeadPoolAudio_V2">
     <GROUP id="{A83249CC-BBDE-3460-4D47-99837809F0B7}" name="Source">
       <FILE id="CTGWrv" name="PluginEditor.cpp" compile="1" resource="0"
@@ -20,11 +21,12 @@
       <FILE id="eFH4tG" name="rtwtypes.h" compile="0" resource="0" file="Source/rtwtypes.h"/>
     </GROUP>
     <GROUP id="{E5254A34-18D6-4BEE-F9F1-E13590F7C0CA}" name="SQ">
-      <FILE id="TgqD6Z" name="triggerValues.cpp" compile="1" resource="0"
-            file="Source/triggerValues.cpp"/>
-      <FILE id="MePK0R" name="triggerValues.h" compile="0" resource="0" file="Source/triggerValues.h"/>
+      <FILE id="Ro5x4a" name="sequencer.cpp" compile="1" resource="0" file="Source/sequencer.cpp"/>
       <FILE id="jE8t02" name="sequencer.h" compile="0" resource="0" file="Source/sequencer.h"/>
       <FILE id="F7LvI1" name="TimerSq.h" compile="0" resource="0" file="Source/TimerSq.h"/>
+      <FILE id="AoTCxb" name="TriggersInit.cpp" compile="1" resource="0"
+            file="Source/TriggersInit.cpp"/>
+      <FILE id="i2IrlZ" name="TriggersInit.h" compile="0" resource="0" file="Source/TriggersInit.h"/>
     </GROUP>
     <GROUP id="{8D3C6CF6-40F6-75F7-7810-E760AE646C0E}" name="audiosampel">
       <FILE id="PE9IbZ" name="Eutils.cpp" compile="1" resource="0" file="Source/Eutils.cpp"/>
@@ -45,7 +47,12 @@
       <FILE id="oYRoLn" name="LfoGen.h" compile="0" resource="0" file="Source/LfoGen.h"/>
     </GROUP>
     <GROUP id="{6BB79B6A-A2DC-2699-8BF7-F37267FC1E78}" name="main">
+      <FILE id="MJ8Dna" name="mainfunktions.cpp" compile="1" resource="0"
+            file="Source/mainfunktions.cpp"/>
       <FILE id="crdbOU" name="mainfunktions.h" compile="0" resource="0" file="Source/mainfunktions.h"/>
+      <FILE id="VNqu8A" name="mainMix.cpp" compile="1" resource="0" file="Source/mainMix.cpp"/>
+      <FILE id="avIzDz" name="mainMix.h" compile="0" resource="0" file="Source/mainMix.h"/>
+      <FILE id="Ia50gR" name="UVmeter.h" compile="0" resource="0" file="Source/UVmeter.h"/>
     </GROUP>
     <GROUP id="{08D7B9B6-31E5-46E4-051F-C99935F0E189}" name="echo">
       <FILE id="HUiLXk" name="echogenerator.cpp" compile="1" resource="0"
