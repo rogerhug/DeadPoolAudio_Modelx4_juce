@@ -20,7 +20,7 @@ download Windows setup here::
 
 https://drive.google.com/file/d/1gkj50TJsruW_4L1vabA2osxW0yB41mGf/view?usp=sharing
 
-thats install the the App , Vst3 Plugin ,SampelBank,PresetFolder
+ install  , Vst3 Plugin ,SampelBank & PresetFolder
 
 include 30 DrumPresets.and more >2000.wav. the First Start with this plugIn in the host //(reaper etc)creates a VST3 Preset Folder
 in C:/yourName/Documents..
