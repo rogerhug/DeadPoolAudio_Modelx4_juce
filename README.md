@@ -13,7 +13,7 @@ and Xcode::mac // vs2019::windows
 ![t1](https://user-images.githubusercontent.com/13609732/147684963-9524a1ec-362e-4144-9182-f8dbb790218f.PNG)
 
 
-latest build windows10 Vst3 /app
+latest build windows10 Vst3 27.2.2022
 
 
 download Windows setup here::
