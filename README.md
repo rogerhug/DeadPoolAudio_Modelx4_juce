@@ -18,7 +18,7 @@ latest build windows10 Vst3 /app
 
 download Windows setup here::
 
-https://drive.google.com/file/d/1Remimfagt1zBcenBQ_ycZo3PYGMijf8u/view?usp=sharing
+https://drive.google.com/file/d/1gkj50TJsruW_4L1vabA2osxW0yB41mGf/view?usp=sharing
 
 thats install the the App , Vst3 Plugin ,SampelBank,PresetFolder
 
