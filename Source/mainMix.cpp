@@ -196,7 +196,7 @@ mainMenuMix::mainMenuMix()
         addAndMakeVisible(MainMixPitchSynthSliders[i]);
         MainMixPitchSynthSliders[i].setSliderStyle(juce::Slider::LinearHorizontal);
         MainMixPitchSynthSliders[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::green);
-        MainMixPitchSynthSliders[i].setTxtValue_ON(true);
+       // MainMixPitchSynthSliders[i].setTxtValue_ON(true);
         MainMixPitchSynthSliders[i].setTextBoxStyle(juce::Slider::TextBoxRight, false, 35, 20);
         MainMixPitchSynthSliders[i].setBounds(210, 20 + i * buttonSethigh, 100, buttonSethigh);
         MainMixPitchSynthSliders[i].setRange(0, 127.0, 1);
@@ -207,7 +207,7 @@ mainMenuMix::mainMenuMix()
         addAndMakeVisible(MainMixPitchAudioSliders[i]);
         MainMixPitchAudioSliders[i].setSliderStyle(juce::Slider::LinearHorizontal);
         MainMixPitchAudioSliders[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::green);
-        MainMixPitchAudioSliders[i].setTxtValue_ON(false);
+       // MainMixPitchAudioSliders[i].setTxtValue_ON(false);
         MainMixPitchAudioSliders[i].setTextBoxStyle(juce::Slider::TextBoxRight, false, 35, 20);
         MainMixPitchAudioSliders[i].setBounds(210, 20 + i * buttonSethigh, 100, buttonSethigh);
         MainMixPitchAudioSliders[i].setRange(0.0, 1.0, 0.001);
