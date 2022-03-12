@@ -32,7 +32,7 @@ first test i think all right?
 cheeers r-hug@gmx.ch
 
 
-
+ the first debug is for vst3  config.. for the app change some parameters (timerX class / start()/End()) vor starting the sound in the app!!
 
 
 
