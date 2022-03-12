@@ -1,5 +1,13 @@
 
 #include "discretFilter.h"
+inline double fastClipLp(double x, double low, double high)
+{
+    double x1 = fabs(x - low);
+    double x2 = fabs(x - high);
+    x = x1 + low + high - x2;
+
+    return x * 0.5;
+}
 
 // Model step function
 void discretFilterModelClass::step(double in,double &out)
@@ -8,7 +16,7 @@ void discretFilterModelClass::step(double in,double &out)
   real_T rtb_Filter;
 
   // S-Function (sdspbiquad): '<Root>/Filter' incorporates:
-  //   Inport: '<Root>/In1'
+
 
     if(fmode.getIndex()==0){out=in;}
 
@@ -38,6 +46,20 @@ void discretFilterModelClass::step(double in,double &out)
   denAccum = ((0.0039653034890946215 * rtb_Filter) - (-1.7523721919496904 *
     rtDWork.Filter_FILT_STATES[6])) - (0.76823340590606892 *
     rtDWork.Filter_FILT_STATES[7]);
+
+
+  buffout = ((((resonance * 30) * rtDWork.Filter_FILT_STATES[6]) + denAccum) +
+
+      rtDWork.Filter_FILT_STATES[7]) * (1 - (cutoff));
+
+
+  out = fastClipLp(in * cutoff + (buffout * cutoff), -1, 1);
+
+
+
+  rtDWork.Filter_FILT_STATES[7] = rtDWork.Filter_FILT_STATES[6];
+  rtDWork.Filter_FILT_STATES[6] = denAccum;
+
     }
   if(fmode.getIndex()==2){
     denAccum = ((0.0011080444613539764 * in) - (-1.9697742374694833 *
@@ -64,6 +86,19 @@ void discretFilterModelClass::step(double in,double &out)
     denAccum = ((0.001053334518101291 * rtb_Filter) - (-1.8725161936714287 *
     rtDWork.Filter_FILT_STATES[6])) - (0.876729531743834 *
     rtDWork.Filter_FILT_STATES[7]);
+
+    buffout = ((((resonance * 24) * rtDWork.Filter_FILT_STATES[6]) + denAccum) +
+
+        rtDWork.Filter_FILT_STATES[7]) * (1 - (cutoff));
+
+
+    out = fastClipLp(in * cutoff + (buffout * cutoff), -1, 1);
+
+
+
+    rtDWork.Filter_FILT_STATES[7] = rtDWork.Filter_FILT_STATES[6];
+    rtDWork.Filter_FILT_STATES[6] = denAccum;
+
   }
     if(fmode.getIndex()==3){
     
@@ -91,6 +126,19 @@ void discretFilterModelClass::step(double in,double &out)
     denAccum = ((0.29370358146567149 * rtb_Filter) - (-0.15892076563243498 *
     rtDWork.Filter_FILT_STATES[6])) - (0.015893560230250979 *
     rtDWork.Filter_FILT_STATES[7]);
+
+    buffout = ((((resonance * 24) * rtDWork.Filter_FILT_STATES[6]) + denAccum) +
+
+        rtDWork.Filter_FILT_STATES[7]) * (1 - (cutoff));
+
+
+    out = fastClipLp(in * cutoff + (buffout * cutoff), -1, 1);
+
+
+
+    rtDWork.Filter_FILT_STATES[7] = rtDWork.Filter_FILT_STATES[6];
+    rtDWork.Filter_FILT_STATES[6] = denAccum;
+
     }
     if(fmode.getIndex()==4){
         
@@ -119,49 +167,63 @@ void discretFilterModelClass::step(double in,double &out)
         denAccum = ((0.50401142565365409 * rtb_Filter) - (-0.83507347238696961 *
         rtDWork.Filter_FILT_STATES[6])) - (0.18097223022764669 *
         rtDWork.Filter_FILT_STATES[7]);
+
+
+        buffout = ((((resonance * 48) * rtDWork.Filter_FILT_STATES[6]) + denAccum) +
+
+            rtDWork.Filter_FILT_STATES[7]) * (1 - (cutoff));
+
+
+        out = fastClipLp(in * cutoff + (buffout * cutoff), -1, 1);
+
+
+
+        rtDWork.Filter_FILT_STATES[7] = rtDWork.Filter_FILT_STATES[6];
+        rtDWork.Filter_FILT_STATES[6] = denAccum;
         
     }
 
-    double buffout;
-     double buffoutWet;
-  // Outport: '<Root>/Out1' incorporates:
-  //   S-Function (sdspbiquad): '<Root>/Filter'
-    if(fmode.getIndex()>0)
-    {
-        
-    buffout = ((((resonance*12) * rtDWork.Filter_FILT_STATES[6]) + denAccum) +
-    rtDWork.Filter_FILT_STATES[7])*SmCut.Process((1-(cutoff)));
-
-    out =  in * cutoff+SmLevel.Process((buffout*12)*cutoff);
+   
 
 
-
-  rtDWork.Filter_FILT_STATES[7] = rtDWork.Filter_FILT_STATES[6];
-  rtDWork.Filter_FILT_STATES[6] = denAccum;
-    }
 }
 
 // Model initialize function
 void discretFilterModelClass::initialize()
 {
-  // (no initialization code required)
+
+   buffout = 0;
+   rtDWork.Filter_FILT_STATES[0] = 0;
+   rtDWork.Filter_FILT_STATES[1] = 0;
+   rtDWork.Filter_FILT_STATES[2] = 0;
+   rtDWork.Filter_FILT_STATES[3] = 0;
+   rtDWork.Filter_FILT_STATES[4] = 0;
+   rtDWork.Filter_FILT_STATES[5] = 0;
+   rtDWork.Filter_FILT_STATES[6] = 0;
+   rtDWork.Filter_FILT_STATES[7] = 0;
+   cutoff = 1;
+   cutoffM = 0;
+   cutoffMod = 0;
+   resonance = 0;
+   buffout = 0;
+   v1 = 0;
 }
 
 // Constructor
 discretFilterModelClass::discretFilterModelClass()
 {
 
-    cutoff=0;
+    cutoff=1;
     cutoffM=0;
     cutoffMod=0;
     resonance=0;
-  
+    buffout = 0;
 }
 
 // Destructor
 discretFilterModelClass::~discretFilterModelClass()
 {
-  // Currently there is no destructor body generated.
+
 }
 
 
