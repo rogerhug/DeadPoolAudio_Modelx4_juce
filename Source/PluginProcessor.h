@@ -260,6 +260,7 @@ public:
     AudioProcessorValueTreeState valueTreeState;
  
     UVmeter meterV;
+    Stepmeter stpV;
 
     int midiNumber;
     PluginParameters parameters;

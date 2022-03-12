@@ -43,12 +43,12 @@ public:
 
      //    startTimer(1000);
   
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 4; ++i) {
             addAndMakeVisible(WaveSizes[i]);
             WaveSizes[i].setClickingTogglesState(true);
             WaveSizes[i].setRadioGroupId(4223);
             WaveSizes[i].setColour(juce::TextButton::buttonColourId, juce::Colours::blue);
-            WaveSizes[i].setBounds(270 + i * 25, 20, 25, 24);
+            WaveSizes[i].setBounds(255 , 20+ i * 25, 25, 24);
          
             if (i == 0)
                 WaveSizes[i].setToggleState(true, juce::dontSendNotification);
@@ -57,7 +57,8 @@ public:
         }
         WaveSizes[0].setButtonText("s");
         WaveSizes[1].setButtonText("m");
-        WaveSizes[2].setButtonText("x");
+        WaveSizes[2].setButtonText("h");
+        WaveSizes[3].setButtonText("x");
 
         
         addAndMakeVisible(EngineMenuButton);
@@ -179,8 +180,8 @@ public:
         SpAttack.setSliderStyle(juce::Slider::LinearHorizontal);
         SpAttack.setPopupDisplayEnabled (true, false, this);
         SpAttack.setNumDecimalPlacesToDisplay(0);
-        SpAttack.setTextValueSuffix ("");
-        SpAttack.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
+        SpAttack.setTextValueSuffix ("A");
+        SpAttack.setTextBoxStyle(juce::Slider::TextBoxRight, false, 60, 20);
         addAndMakeVisible (SpAttack);
         SpAttack.setLookAndFeel(claf);
         
@@ -188,8 +189,8 @@ public:
         SpRelease.setSliderStyle(juce::Slider::LinearHorizontal);
         SpRelease.setPopupDisplayEnabled (true, false, this);
         SpRelease.setNumDecimalPlacesToDisplay(0);
-        SpRelease.setTextValueSuffix ("");
-        SpRelease.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
+        SpRelease.setTextValueSuffix ("R");
+        SpRelease.setTextBoxStyle(juce::Slider::TextBoxRight, false, 60, 20);
         addAndMakeVisible (SpRelease);
         SpRelease.setLookAndFeel(claf);
        
@@ -197,10 +198,12 @@ public:
         
         EnvelopeMode.setButtonText("A       R");
         EnvelopeMode.setClickingTogglesState(true);
-        EnvelopeMode.setColour(juce::TextButton::buttonOnColourId, juce::Colours::white);
-        EnvelopeMode.setColour(juce::TextButton::buttonColourId, juce::Colours::silver);
+        EnvelopeMode.setColour(juce::TextButton::buttonOnColourId, juce::Colours::green);
+        EnvelopeMode.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
         addAndMakeVisible(EnvelopeMode);
+       
         EnvelopeMode.setLookAndFeel(fxlaf);
+
 
         addAndMakeVisible(EnvelopeModeLabel);
         EnvelopeModeLabel.setText("EnV-Off_lofi-mode", juce::dontSendNotification);
@@ -393,14 +396,14 @@ public:
         initSlider(synthAttackSlider); //setRange(0, 1, 0);
         
         synthAttackSlider.setTextValueSuffix ("");
-        synthAttackSlider.setTextBoxStyle(Slider::TextBoxRight, false, 40, 20);
+        synthAttackSlider.setTextBoxStyle(Slider::TextBoxRight, false, 60, 20);
         synthAttackSlider.setLookAndFeel(fxlaf);
         synthAttackSlider.setVisible(false);
         
         initSlider(synthReleaseSlider); //setRange(0, 1, 0);
       
         synthReleaseSlider.setTextValueSuffix ("");
-        synthReleaseSlider.setTextBoxStyle(Slider::TextBoxRight, false, 40, 20);
+        synthReleaseSlider.setTextBoxStyle(Slider::TextBoxRight, false, 60, 20);
         synthReleaseSlider.setLookAndFeel(fxlaf);
         synthReleaseSlider.setVisible(false);
         
@@ -439,22 +442,25 @@ public:
 
            
             //----sampler loop  mode---
-            if (EngineMenuButton.getToggleState() == false && playModeCombo.getSelectedItemIndex() < 2) {
-                SampelStart.setVisible(false);
-                SampelEnd.setVisible(false);
-                EnvelopeMode.setVisible(true);
-                SpAttack.setVisible(EnvelopeMode.getToggleState());
-                SpRelease.setVisible(EnvelopeMode.getToggleState());
-            }
-            if (EngineMenuButton.getToggleState() == false && playModeCombo.getSelectedItemIndex() == 2) {
+            if (EngineMenuButton.getToggleState() == false && playModeCombo.getSelectedItemIndex() ==2) {
                 SampelStart.setVisible(true);
                 SampelEnd.setVisible(true);
                 EnvelopeMode.setVisible(false);
-                WaveSizes[0].setVisible(false);
-                WaveSizes[1].setVisible(false);
-                WaveSizes[2].setVisible(false);
                 SpAttack.setVisible(false);
                 SpRelease.setVisible(false);
+                WaveSizes[0].setVisible(true);
+                WaveSizes[1].setVisible(true);
+                WaveSizes[2].setVisible(true);
+            }
+            if (EngineMenuButton.getToggleState() == false && playModeCombo.getSelectedItemIndex() == 1) {
+                SampelStart.setVisible(false);
+                SampelEnd.setVisible(false);
+                EnvelopeMode.setVisible(true);
+                WaveSizes[0].setVisible(true);
+                WaveSizes[1].setVisible(true);
+                WaveSizes[2].setVisible(true);
+                SpAttack.setVisible(true);
+                SpRelease.setVisible(true);
                 
             }
             if (EngineMenuButton.getToggleState() == true ) {
@@ -464,15 +470,17 @@ public:
              
                
             }
-           
-             hidecontrollAr();
+            h1();
+            // hidecontrollAr();
         
     }
 
     bool h1() {
 
-        if (LfoModulationSampel.getToggleState() == true) { return  false; }
-        if (LfoModulationSampel.getToggleState() == false) { return  true; }
+        if (LfoModulationSampel.getToggleState() == true) { return  false;  ;
+        }
+        if (LfoModulationSampel.getToggleState() == false) { return  true; ;
+        }
         else return 0;
             
    }
@@ -525,18 +533,11 @@ public:
    }
     void hidecontrollAr()
     {
-        if (playModeCombo.getSelectedItemIndex() < 2) {
-            for(int i=0;i<3;i++)
-                WaveSizes[i].setVisible(envre());
-        }
-        if (playModeCombo.getSelectedItemIndex() == 2) {
-            for (int i = 0; i < 3; i++)
-                WaveSizes[i].setVisible(false);
-        }
+       
 
         if (EngineMenuButton.getToggleState() == false) {
-            SpAttack.setVisible(EnvelopeMode.getToggleState());
-            SpRelease.setVisible(EnvelopeMode.getToggleState());
+            SpAttack.setVisible(true);
+            SpRelease.setVisible(true);
             synthAttackSlider.setVisible(false);
             synthReleaseSlider.setVisible(false);
        
@@ -544,19 +545,19 @@ public:
         if (EngineMenuButton.getToggleState() == true) {
             SpAttack.setVisible(false);
             SpRelease.setVisible(false);
-            synthAttackSlider.setVisible(EnvelopeMode.getToggleState());
-            synthReleaseSlider.setVisible(EnvelopeMode.getToggleState());
+            synthAttackSlider.setVisible(true);
+            synthReleaseSlider.setVisible(true);
 
         }
    }
     void paint (juce::Graphics& g) override
     {
         juce::Path b;
-        b.addRectangle (0,0, 715,150);
+        b.addRectangle (0,0, 720,150);
         g.setColour (juce::Colours::ghostwhite);
         g.fillPath (b);
         juce::Path w;
-        w.addRectangle (3,3, 687,142);
+        w.addRectangle (3,3, 692,142);
         g.setColour (juce::Colours::black);
         g.fillPath (w);
         
@@ -694,9 +695,9 @@ public:
         noteNumberSliderMod.setBounds(130,60,120,20);
         synthLevelSlider.setBounds(130,40,120,20);
         synthLevelSliderMod.setBounds(130,40,120,20);
-        synthAttackSlider.setBounds(270,20,80,20);
-        synthReleaseSlider.setBounds(270,40,80,20);
-        synthReleaseSliderMod.setBounds(270,40,80,20);
+        synthAttackSlider.setBounds(280,20,120,20);
+        synthReleaseSlider.setBounds(280,40,120,20);
+        synthReleaseSliderMod.setBounds(280,40,80,20);
         
 
         
@@ -715,17 +716,17 @@ public:
         
         
         
-        SampelStart.setBounds (270,20, 120, 20);
-        SampelEnd.setBounds (270,40, 120, 20);
-        SpAttack.setBounds(270,20,80,20);
-        SpRelease.setBounds(270,40, 80, 20);
+        SampelStart.setBounds (280,20, 120, 20);
+        SampelEnd.setBounds (280,40, 120, 20);
+        SpAttack.setBounds(280,20,120,20);
+        SpRelease.setBounds(280,40, 120, 20);
      //   SpReleaseMod.setBounds(270,40, 80, 20);
-        EnvelopeMode.setBounds(350, 20, 40, 40);
+        EnvelopeMode.setBounds(400, 20, 20, 40);
       
-        Cutoff.setBounds (270,60, 120, 20);
-        CutMod.setBounds (270,60, 120, 20);
-        Resonance.setBounds (270 ,80, 120, 20);
-        FilterModeCombo.setBounds(270,100,120,20);
+        Cutoff.setBounds (280,60, 120, 20);
+        CutMod.setBounds (280,60, 120, 20);
+        Resonance.setBounds (280 ,80, 120, 20);
+        FilterModeCombo.setBounds(280,100,120,20);
        
        
         LfoTime.setBounds(560,50,120,20);
@@ -734,21 +735,21 @@ public:
         LfoRtrModeCombo.setBounds(560,90,120,20);
         
         
-        DelayTime.setBounds (410,20,125,20);
-        DelayTimeMod.setBounds (410,20,125,20);
-        DelayFeed.setBounds (410,40, 125, 20);
-        DelayFeedMod.setBounds (410,40,125,20);
-        DelayMix.setBounds (410,80, 125, 20);
-        DelayMixMod.setBounds (410,80,125,20);
-        DelayLevel.setBounds (410,60,125,20);
-        DelayLevelMod.setBounds (410,60,125,20);
-        DelayModeCombo.setBounds(410,100,125,20);
+        DelayTime.setBounds (420,20,125,20);
+        DelayTimeMod.setBounds (420,20,125,20);
+        DelayFeed.setBounds (420,40, 125, 20);
+        DelayFeedMod.setBounds (420,40,125,20);
+        DelayMix.setBounds (420,80, 125, 20);
+        DelayMixMod.setBounds (420,80,125,20);
+        DelayLevel.setBounds (420,60,125,20);
+        DelayLevelMod.setBounds (420,60,125,20);
+        DelayModeCombo.setBounds(420,100,125,20);
       
     }
 
 
     Slider WaveSizes_t;
-    TextButton WaveSizes[3];
+    TextButton WaveSizes[4];
 
     bool IsState;
     int EngineColour;

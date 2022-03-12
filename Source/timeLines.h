@@ -75,7 +75,7 @@ using Timer_t = TimerX<>;
 //==============================================================================
 /*
 */
-class timeLines  
+class timeLines
 {
 public:
     timeLines();

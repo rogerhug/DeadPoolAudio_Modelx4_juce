@@ -141,9 +141,16 @@ struct ParasEng
         }
       
     }
-    void setStepperVolume(double v)
+    double V2 = 0;
+    void setStepperVolume(double in)
     {
-        mStepperVolume = v;
+        double a = in;
+        const double STEP_ATTACK = 0.02, STEP_DECAY = 0.03;
+        double xL = (a < V2 ? STEP_DECAY : STEP_ATTACK);
+        a = a * xL + V2 * (1.0 - xL);
+        V2 = a;
+        const double y = a;
+        mStepperVolume = a;
 
     }
     double SampelAttack(int*idxc,double*in)
@@ -223,7 +230,7 @@ public:
     AudioSample();
     ~AudioSample();
     void reset();
-
+   SynthOscillator oscillator;
     void processAudioSampel(const int *trigger,double*Out,int nFrames, int *readout);
     void processSynthSampel(const int *trigger,double*Out,int nFrames, int *readout);
     void processOut(const int *triggerP,double*Out,int nFrames, int *readout);
@@ -243,21 +250,24 @@ public:
         for(int c=0;c<MAX_VOICES;c++)
             mSampelIndxPoly[c] = s - 1; 
     }
-
+    void cutoffsteppermod(double h) { steppcut=h; }
+    void delaysteppermod(double h) { steppdelay = h; }
     int waveSize;
     ParasEng mp;
     discretFilterModelClass*filterDsLp;
-    SynthOscillator oscillator;
+ 
     echogeneratorModelClass *echo;
     compressor_cModelClass comp;
 private:
     double data1;
     double data2;
+    double steppcut;
+    double steppdelay;
     bool ArOn;
     int mSampleIndx;
     int mSampelIndxMonoEnvR;
     int mSampeleMonoEnd;
-    int mSampelIndxPoly[MAX_VOICES];
+    unsigned int mSampelIndxPoly[MAX_VOICES];
     int mSampelIndxPolyEnvA[MAX_VOICES];
     int mSampelIndxPolyEnvR[MAX_VOICES];
     WDL_Resampler mResampler;

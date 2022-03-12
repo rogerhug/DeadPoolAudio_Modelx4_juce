@@ -19,7 +19,8 @@ timeLines::timeLines()
     seqlenght = 16;
     mainlfoselect = 0;
     Blocksize = 512;
- 
+   
+    tm1.Start();
 }
 
 timeLines::~timeLines()
@@ -190,8 +191,8 @@ void timeLines::division(int n)
 double timeLines::timerChrono(int selectSp)
 { 
  // in reaper i have the plug recording activatet eg(for just monitoring) ..else not comes this info right
- if (info.isPlaying > 0) {                  
-    
+     if (info.isPlaying > 0) {   //vst               
+    //if(setTime == 2){              //app
  
     const int size = seqlenght;
     const int sizeSHmain = mainlfoSh;
@@ -201,13 +202,14 @@ double timeLines::timerChrono(int selectSp)
          tm1.Start();  
          tm1.CalcDuration();
         // data1[0]=tm1.TestLatency512().count(); //----------readers to gui(Plugineditor/timercallback())
-        // data1[1] = tm1.GetDuration().count(); 
+        data1[1] = tm1.GetDuration().count(); 
      
 
          //--Time ++--------------------------------
 
          for(int sp=0;sp<7;++sp){
-         if (Blocksize == 512)  { Timelines[sp]= (tm1.GetDuration().count() - 1);  }  } //  fix blocksize 512 ..(if blocksize 128 /4 for offset function not yet)
+        Timelines[sp]= (tm1.GetDuration().count() - 1);  }  
+         const double offsetC = tm1.TestLatency512().count() / 512 * Blocksize;
 
          //--pseudo offset calc 9 to> || 8 to< ---eg takt 1/16 
 
@@ -221,49 +223,57 @@ double timeLines::timerChrono(int selectSp)
          const int timeCounts1 = timeOuts1[0] % offsetPerSteps[0];
 
          if (timeOuts1[0] % offsetPerSteps[0] == timeCounts1) {
-             Timelines[0] += tm1.TestLatency512().count() * fixdivision[0]; }
+             Timelines[0] += offsetC * fixdivision[0]; }
 
          const int timeCounts2 = timeOuts2[0] % offsetPerSteps[1];
 
          if (timeOuts2[0] % offsetPerSteps[1] == timeCounts2) {
-             Timelines[1] += tm1.TestLatency512().count() * fixdivision[1]; }
+             Timelines[1] += offsetC * fixdivision[1]; }
 
          const int timeCounts3 = timeOuts3[0] % offsetPerSteps[2];
 
          if (timeOuts3[0] % offsetPerSteps[2] == timeCounts3) {
-             Timelines[2] += tm1.TestLatency512().count() * fixdivision[2];
+             Timelines[2] += offsetC * fixdivision[2];
          }
          const int timeCounts4 = timeOuts4[0] % offsetPerSteps[3];
 
          if (timeOuts4[0] % offsetPerSteps[3] == timeCounts4) {
-             Timelines[3] += tm1.TestLatency512().count() * fixdivision[3];
+             Timelines[3] += offsetC * fixdivision[3];
          }
          const int timeCounts5 = timeOuts5[0] % offsetPerSteps[4];
 
          if (timeOuts5[0] % offsetPerSteps[4] == timeCounts5) {
-             Timelines[4] += tm1.TestLatency512().count() * fixdivision[4];
+             Timelines[4] += offsetC * fixdivision[4];
          }
          const int timeCounts6 = timeOuts6[0] % offsetPerSteps[5];
 
          if (timeOuts6[0] % offsetPerSteps[5] == timeCounts6) {
-             Timelines[5] += tm1.TestLatency512().count() * fixdivision[5];
+             Timelines[5] += offsetC * fixdivision[5];
          }
          const int timeCounts7 = timeOuts7[0] % offsetPerSteps[6];
 
          if (timeOuts7[0] % offsetPerSteps[6] == timeCounts7) {
-             Timelines[6] += tm1.TestLatency512().count() * fixdivision[6];
+             Timelines[6] += offsetC * fixdivision[6];
          }
          //-----------time mode-------------------
 
-
-         const double t1 = (Timelines[0] * 0.01 ) / 100 * info.bpm * fixdivision[0];
+       
+         const double t1 = (Timelines[0] * 0.01 ) / 100 * info.bpm * fixdivision[0];//-----------vst
          const double t2 = (Timelines[1] * 0.01) / 100 * info.bpm * fixdivision[1];
          const double t3 = (Timelines[2] * 0.01) / 100 * info.bpm * fixdivision[2];
          const double t4 = (Timelines[3] * 0.01) / 100 * info.bpm * fixdivision[3];
          const double t5 = (Timelines[4] * 0.01) / 100 * info.bpm * fixdivision[4];
          const double t6 = (Timelines[5] * 0.01) / 100 * info.bpm * fixdivision[5];
          const double t7 = (Timelines[6] * 0.01) / 100 * info.bpm * fixdivision[6];
-
+  /*        
+         const double t1 = (Timelines[0] * 0.01) / 100 * bPm * fixdivision[0];//-----------app
+         const double t2 = (Timelines[1] * 0.01) / 100 * bPm * fixdivision[1];
+         const double t3 = (Timelines[2] * 0.01) / 100 * bPm * fixdivision[2];
+         const double t4 = (Timelines[3] * 0.01) / 100 * bPm * fixdivision[3];
+         const double t5 = (Timelines[4] * 0.01) / 100 * bPm * fixdivision[4];
+         const double t6 = (Timelines[5] * 0.01) / 100 * bPm * fixdivision[5];
+         const double t7 = (Timelines[6] * 0.01) / 100 * bPm * fixdivision[6];
+ */
              timeOutsSH[0]= (int)fmod(t1, sizeSHmain);
 
              timeOuts1[0] = (int)fmod(t1, size);
@@ -287,7 +297,8 @@ double timeLines::timerChrono(int selectSp)
         return  0;
 
         }
- if (info.isPlaying == 0) { tm1.End();; }
+    if(setTime <2){ tm1.End(); }
+ if (info.isPlaying == 0) { tm1.End();; }// app
 
  if (info.ppqLoopEnd - info.ppqPosition == 0) { tm1.Zero(); }
     

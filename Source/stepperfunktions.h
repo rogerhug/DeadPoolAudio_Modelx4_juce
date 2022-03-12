@@ -21,7 +21,8 @@ public:
     stepperfunktions();
     ~stepperfunktions() override;
     void setMainStepper(double* in, int n, int mode);
-    void mStepper(AudioSample& s,const int *time);
+    double mStepper(AudioSample& s,const int *time);
+    double getValue();
 
 private:
     double** steppers;

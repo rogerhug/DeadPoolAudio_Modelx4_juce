@@ -120,7 +120,7 @@ mainMenuMix::mainMenuMix()
         StepperOut[i].setBounds(240 + i * 80, 120, 80, 20);
 
         if (i == 0)
-            stepModeValue();
+        
 
         StepperOut[i].setToggleState(true, juce::dontSendNotification);
         StepperOut[i].setColour(juce::TextButton::buttonColourId, juce::Colours::green);
@@ -128,26 +128,26 @@ mainMenuMix::mainMenuMix()
     }
     StepperOut[0].setButtonText("Off");//<----wave chance else
     StepperOut[1].setButtonText("Pitch");
-    StepperOut[2].setButtonText("DelayMix");
-    StepperOut[3].setButtonText("LfoTime");
+    StepperOut[2].setButtonText("Cutoff");
+    StepperOut[3].setButtonText("DelayMix");
     StepperOut[4].setButtonText("Volume");
 
 
     for (int i = 0; i < 16; ++i) {
-        addAndMakeVisible(MainMenuModSlider[i]);
-        MainMenuModSlider[i].setSliderStyle(juce::Slider::LinearVertical);
-        MainMenuModSlider[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::blue);
-        MainMenuModSlider[i].setTextBoxStyle(juce::Slider::TextBoxBelow, false, 35, 20);
-        MainMenuModSlider[i].setBounds(1 + i * 38, 20, 38, 80);
-        MainMenuModSlider[i].setRange(0.0, 1.0, 0.01);
+        addAndMakeVisible(StepperValueSliders[i]);
+        StepperValueSliders[i].setSliderStyle(juce::Slider::LinearVertical);
+        StepperValueSliders[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::blue);
+        StepperValueSliders[i].setTextBoxStyle(juce::Slider::TextBoxBelow, false, 35, 20);
+        StepperValueSliders[i].setBounds(1 + i * 38, 20, 38, 80);
+        StepperValueSliders[i].setRange(0.0, 1.0, 0.01);
 
 
-        MainMenuModSlider[i], setVisible(false);
-        MainMenuModSlider[i].setLookAndFeel(mlaf);
+        StepperValueSliders[i], setVisible(false);
+        StepperValueSliders[i].setLookAndFeel(mlaf);
         if (i == 0)
-            stepValues();
+        
 
-        MainMenuModSlider[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::orange);
+        StepperValueSliders[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::orange);
     }
     addAndMakeVisible(Stepper1Label);
     Stepper1Label.setText("Stepper_Mod---Output->", juce::dontSendNotification);
@@ -196,7 +196,7 @@ mainMenuMix::mainMenuMix()
         addAndMakeVisible(MainMixPitchSynthSliders[i]);
         MainMixPitchSynthSliders[i].setSliderStyle(juce::Slider::LinearHorizontal);
         MainMixPitchSynthSliders[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::green);
-       // MainMixPitchSynthSliders[i].setTxtValue_ON(true);
+        MainMixPitchSynthSliders[i].setTxtValue_ON(true);
         MainMixPitchSynthSliders[i].setTextBoxStyle(juce::Slider::TextBoxRight, false, 35, 20);
         MainMixPitchSynthSliders[i].setBounds(210, 20 + i * buttonSethigh, 100, buttonSethigh);
         MainMixPitchSynthSliders[i].setRange(0, 127.0, 1);
@@ -207,7 +207,7 @@ mainMenuMix::mainMenuMix()
         addAndMakeVisible(MainMixPitchAudioSliders[i]);
         MainMixPitchAudioSliders[i].setSliderStyle(juce::Slider::LinearHorizontal);
         MainMixPitchAudioSliders[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::green);
-       // MainMixPitchAudioSliders[i].setTxtValue_ON(false);
+        MainMixPitchAudioSliders[i].setTxtValue_ON(false);
         MainMixPitchAudioSliders[i].setTextBoxStyle(juce::Slider::TextBoxRight, false, 35, 20);
         MainMixPitchAudioSliders[i].setBounds(210, 20 + i * buttonSethigh, 100, buttonSethigh);
         MainMixPitchAudioSliders[i].setRange(0.0, 1.0, 0.001);
@@ -434,26 +434,28 @@ mainMenuMix::mainMenuMix()
     SpAudioSet7[4].setButtonText("Voices");
 
     //*****************************************intit Triggers********************************
-
-    addAndMakeVisible(triggersets[aS]);
-
-    triggersets[aS].setClickingTogglesState(true);
-
-    triggersets[aS].setRadioGroupId(145160);
-    triggersets[aS].setColour(juce::TextButton::buttonColourId, juce::Colours::blue);
-    triggersets[aS].setBounds(400, 20+aS* buttonSethigh, buttonSetsize+50, buttonSethigh);
-
-    triggersets[0].setButtonText("Preset");
-    triggersets[1].setButtonText("DUBSTEP");
-    triggersets[2].setButtonText("BREAKS");
-    triggersets[3].setButtonText("HOUSE");
-    triggersets[4].setButtonText("SYNTHS");
+    
 
 }
     
+    for (int b = 0; b < 3; b++) {
+        addAndMakeVisible(Highlight[b]);
 
+        Highlight[b].setClickingTogglesState(true);
 
+        Highlight[b].setRadioGroupId(145160);
+        Highlight[b].setColour(juce::TextButton::buttonColourId, juce::Colours::blue);
+        Highlight[b].setBounds(500, 20 + b * buttonSethigh, buttonSetsize + 50, buttonSethigh);
 
+        Highlight[0].setButtonText("Highlight-Off");
+        Highlight[1].setButtonText("Highlight-limit ");
+        Highlight[2].setButtonText("Highlight-stp/lim");
+       
+
+    }
+    addAndMakeVisible(hgl);
+    hgl.setText("show steps cpu 1%up", juce::dontSendNotification);
+    hgl.setBounds(480, 0, 150, 20);
 
     initCombo(Sp1MixTime);
     TimeDivMode::setupComboBox(Sp1MixTime);
@@ -502,29 +504,15 @@ mainMenuMix::mainMenuMix()
 }
 int modeb[7][5] = { 0 };
 double stepsOut[8][10][16];
+double stepsValueIn[8][10][16];
 mainMenuMix::~mainMenuMix()
 {
    
 
 
 }
-  int on[8];
-void mainMenuMix::setStepper(int s,int p)
-{
-  
-    if (patternstate[s] == false) { on[s] = 0; }
 
-    if (patternstate[s] == true) { on[s] = p; }
-    for (int v = 0; v < 16; v++)
-    {
-       
-        changeSampler = s;
-        MainMenuModSlider[v].setValue(stepsOut[s][on[s]][v], juce::dontSendNotification);
- 
-       //   stepModeValue();
-    }
-   // changeStepperColor(s, p);
-}
+
 
 
 void mainMenuMix::init(AudioProcessorValueTreeState& valueTreeState)
@@ -543,7 +531,7 @@ void mainMenuMix::init(AudioProcessorValueTreeState& valueTreeState)
            
             for (int s = 0; s < 16; s++)
             {    stepsOut[i][p][s] = 0.5;
-                MainMenuModSlider[s].setValue(0.5, juce::dontSendNotification);
+                StepperValueSliders[s].setValue(0.5, juce::dontSendNotification);
                 
                 valueTreeState.state.setProperty(StepValuesNames(s, i),
                 var("0.5,0.5,0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 "), nullptr);
@@ -552,89 +540,72 @@ void mainMenuMix::init(AudioProcessorValueTreeState& valueTreeState)
         }
     }
 }
-//*****************************************midi cc in******************************
+
 
 //*****************************************steppMode******************************
-
-  int stepperm = 0;
-const int mainMenuMix::stepModeValue()
+int modebI[8] = { 0,0,0,0,0,0,0 };
+int stepperm[10] = { 0,0,0,0,0,0,0,0,0,0 };
+int rtio[7][2];
+const int *mainMenuMix::stepModeValue()
 {
-       
-
-        if (StepperOut[0].getToggleState() > 0) { stepperm = 0;  }
-        if (StepperOut[1].getToggleState() > 0) { stepperm = 1; }
-        if (StepperOut[2].getToggleState() > 0) { stepperm = 2; }
-        if (StepperOut[3].getToggleState() > 0) { stepperm = 3; }
-        if (StepperOut[4].getToggleState() > 0) { stepperm = 4; }
-
-  
-  
-        
-
-    return stepperm;
-
-
+    const int engine = changeSampler;
+ 
+        if (StepperOut[0].getToggleState() > 0 ) { stepperm[engine] = 0;  }
+        if (StepperOut[1].getToggleState() > 0 ) { stepperm[engine] = 1; }
+        if (StepperOut[2].getToggleState() > 0) { stepperm[engine] = 2; }
+        if (StepperOut[3].getToggleState() > 0 ) { stepperm[engine] = 3; }
+        if (StepperOut[4].getToggleState() > 0 ) { stepperm[engine] = 4; }
+         return stepperm;
 
     }
 
-char modebC[8][2] = { "-" };
-int modebI[8];
-void mainMenuMix::serialModeStepps(AudioProcessorValueTreeState& valueTreeState, int v, int sp)
+char modebC[17] = { "-" };
+int stepModeIn[16] = { 00,00,00,00,00,00 };
+void mainMenuMix::serialModeStepps(AudioProcessorValueTreeState& valueTreeState,int v,  int sp)
 {
+    stepModeIn[sp] = v;
  for (int s = 0; s < 8; s++) { 
-    sprintf(modebC[sp], "%i", stepModeValue());
-    valueTreeState.state.setProperty(StepModeNames(1, s), var(modebC[s]), nullptr);
-    
+    sprintf(modebC," %d %d %d %d %d %d %d ", stepperm[0], stepperm[1], stepperm[2], stepperm[3], stepperm[4], stepperm[5], stepperm[6]);
+    valueTreeState.state.setProperty(StepModeNames(1, 1), var(modebC), nullptr);
+   // strcpy(crdIn, modebC);
 }
- modebI[changeSampler] = stepModeValue();
+ // stepperm[sp] = stepModeIn[sp];
+
 }
 
-int mainMenuMix::getMv()
-{
- 
- 
-    
-    return 0;// modebI[changeSampler];
-  
-}
-void mainMenuMix::changeMode(int s)
-{
-
-
-
-    StepperOut[modebI[s]].setToggleState(true, juce::dontSendNotification);
-
-   
-}
 void mainMenuMix::unSerialModeStepps(AudioProcessorValueTreeState& valueTreeState, int s, int nt)
 {
     for (int n = 0; n <= 7; n++) {
 
+       SteppModeValues[0].referTo(valueTreeState.state.getPropertyAsValue(StepModeNames(1, 1), nullptr, true));
       
-            SteppModeValues[n].referTo(valueTreeState.state.getPropertyAsValue(StepModeNames(1, n), nullptr, true));
-      
-            for (int i = 0; i <=7 ; i ++) {
+        for (int i = 1; i <= 20; i += 1) {
 
 
-                modebI[n] = SteppModeValues[n].getValue().toString().getIntValue();
-
-            
+            stepperm[i/2] = SteppModeValues[0].getValue().toString().substring(i, i + 2).getIntValue();
         
-    }
+           // strcpy(crd, SteppModeValues[0].getValue().toString().toRawUTF8());
+        }
+
+       
+        StepperOut[stepperm[0]].setToggleState(true, juce::dontSendNotification);
+
+
+        
+
+       
  }
-   
-
-       StepperOut[modebI[changeSampler]].setToggleState(true, juce::dontSendNotification);
-
-
-
-
-    
-
-
-
+ 
 }
-
+void mainMenuMix::changeMode(int s)
+{
+   
+    StepperOut[stepperm[s]].setToggleState(true, juce::dontSendNotification);
+    for (int v = 0; v < 16; v++)
+    {
+        StepperValueSliders[v].setValue(stepsOut[s][0][v], juce::dontSendNotification);
+    }
+}
 
 inline bool RetrueFalse(bool in)
 {
@@ -645,6 +616,209 @@ inline bool RetrueFalse(bool in)
 
 
 //*****************************************steppvalues***************************
+
+
+
+double spv[8][16] = { 0 };
+int on[8] = { 0,0,0,0,0,0,0 };
+void mainMenuMix::InitPatternSteps(int e,int s,int m,bool*st,int p)
+{
+    if (s >0) {
+        if (st[s] == false) { on[s] = 0; }
+
+        if (st[s] == true) { on[s] = p; }
+              for (int v = 0; v < 16; v++)
+                {
+                    if (m == 0) {
+                        StepperValueSliders[v].setValue(0.5, juce::dontSendNotification);
+                        stepsOut[s][on[s]][v] = 0.5;// StepperValueSliders[v].getValue();
+                  
+                    }
+                    
+                    if (m == 1) {
+                        StepperValueSliders[v].setValue(stepDnini[v], juce::dontSendNotification);
+                        stepsOut[s][on[s]][v] = stepDnini[v];// StepperValueSliders[v].getValue();
+                       
+                    }
+                    if (m == 2) {
+                        StepperValueSliders[v].setValue(stepupini[v], juce::dontSendNotification);
+                        stepsOut[s][on[s]][v] = stepupini[v];// StepperValueSliders[v].getValue();
+                       
+                    }
+                    if (m == 3) {
+                        StepperValueSliders[v].setValue(stepsinini[v], juce::dontSendNotification);
+                        stepsOut[s][on[s]][v] = stepsinini[v];// StepperValueSliders[v].getValue();
+                     
+                    }
+                    
+                
+            } 
+              
+    }
+    s = 0;
+   
+}
+void mainMenuMix::resetPatternSteps(int s)
+{
+    for (int e = 0; e < 8; e++)
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            for (int v = 0; v < 16; v++)
+            {
+                stepsOut[s][i][v]= StepperValueSliders[v].getValue();
+
+    }
+}
+    }
+    //memcpy(stepsOut[s][pattern[s]], stepsOut[s][pattern[s]], 8 * sizeof(double));
+}
+double* mainMenuMix::stepValues(int e)
+{
+    for (int i = 0; i < 16; i++)
+    {
+        spv[e][i] = StepperValueSliders[i].getValue();
+    }
+    return  spv[e];
+}
+
+
+char serialStepValues[8][10][16] = { 0 };
+
+void mainMenuMix::serialStepps(AudioProcessorValueTreeState& valueTreeState ,double*v,int n,int p)
+{
+    for (int i = 0; i < 16; i++) {
+
+      
+        stepsValueIn[n][0][i] = v[i];
+        sprintf(serialStepValues[n][0], "%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f"
+            , v[0],v[1],v[2],v[3],v[4],v[5],v[6],v[7],v[8],v[9],v[10],v[11],v[12],v[13],v[14],v[15]);
+
+       
+            valueTreeState.state.setProperty(StepValuesNames(i,n), var(serialStepValues[n][i]), nullptr);
+
+          
+        }
+ 
+   
+}
+double stUs[8][16] = {0,0,0,0,0,0,0,0};
+void mainMenuMix::unSerialStepps(AudioProcessorValueTreeState& valueTreeState,int s,int p)
+{
+    
+for (int n = 0; n <= 7; n++) {
+
+    for (int i = 0; i < 16; i++)
+    {
+        SteppValues[n][i].referTo(valueTreeState.state.getPropertyAsValue(StepValuesNames(i,n), nullptr, true));
+
+       for (int pr = 0; pr <= 10; pr++) {
+           for (int y = 0; y <= 80; y += 5) {
+
+
+               stepsOut[n][0][y / 5] = SteppValues[n][0].getValue().toString().substring(y, y + 4).getDoubleValue();
+          
+               stUs[n][y / 5] = SteppValues[n][0].getValue().toString().substring(y, y + 4).getDoubleValue();
+           }
+       }
+  
+      // strcpy(crd, SteppValues[0][0].getValue().toString().toRawUTF8());
+     //  memcpy(stUs[0], SteppValues[0], 16 * sizeof(double));
+   
+       StepperValueSliders[i].setValue(stUs[s][i],juce::dontSendNotification);
+       steppVunSerial(n);
+ }
+ }
+ 
+}
+double* mainMenuMix::steppVunSerial(int e)
+{
+    return stUs[e];
+}
+
+//***********************************************step colors & hide control**************
+bool statepatterns[11];
+int changeSt[11][11][17];
+void mainMenuMix::setHideColors1( int *c,int s,int p)
+{
+   
+    for (int i = 0; i < 16; i++)
+        changeSt[0][p][i] = c[i];
+    changeStepperColor(s,p);
+ 
+}
+
+void mainMenuMix::setHideColors2(int* c, int s, int p)
+{
+    for (int i = 0; i < 16; i++)
+        changeSt[1][p][i] = c[i];
+    changeStepperColor(s,p);
+}
+
+void mainMenuMix::setHideColors3(int* c, int s, int p)
+{
+    for (int i = 0; i < 16; i++)
+        changeSt[2][p][i] = c[i];
+    changeStepperColor(s,p);
+}
+
+void mainMenuMix::setHideColors4(int* c, int s, int p)
+{
+    for (int i = 0; i < 16; i++)
+        changeSt[s][p][i] = c[i];
+    changeStepperColor(s,p);
+}
+
+void mainMenuMix::setHideColors5(int* c, int s, int p)
+{
+    for (int i = 0; i < 16; i++)
+        changeSt[s][p][i] = c[i];
+    changeStepperColor(s, p);
+}
+
+void mainMenuMix::setHideColors6(int* c, int s, int p)
+{
+    for (int i = 0; i < 16; i++)
+        changeSt[s][p][i] = c[i];
+    changeStepperColor(s, p);
+    }
+
+void mainMenuMix::setHideColors7(int* c, int s, int p)
+{
+    for (int i = 0; i < 16; i++)
+        changeSt[s][p][i] = c[i];
+    changeStepperColor(s, p);
+}
+
+void mainMenuMix::setPatternState(bool* s)
+{
+ 
+    memcpy(patternstate, s, 8 * sizeof(bool));
+}
+int pattern[8];
+void mainMenuMix::changeStepperColor(int s,int p)
+{
+    
+
+   
+
+     for (int i = 0; i < 16; ++i) {
+            if (changeSt[s][p][i] > 0) {
+                StepperValueSliders[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::grey);
+               
+            }
+            if (changeSt[s][p][i] == 0) {
+                StepperValueSliders[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::blue);
+               
+            }
+          // StepperValueSliders[i].setValue(stepsOut[s][p][i], juce::dontSendNotification);
+        
+    }
+   
+    
+}
+
+
 void mainMenuMix::hideMix(int n,bool *e)
 {  
     hideAudioSynth = n;
@@ -657,6 +831,9 @@ void mainMenuMix::hideMix(int n,bool *e)
  
 
             for(int b = 0; b < 5; ++b) {
+
+
+                for (int c = 0; c < 3; ++c) {
             if (n == 0) {
                 MidiCCcombo.setVisible(false);
                 MidiCCLabel.setVisible(false);
@@ -670,7 +847,7 @@ void mainMenuMix::hideMix(int n,bool *e)
                 MidiCCLabelM1.setVisible(false);
                 MidiCCLabelM2.setVisible(false);
                 MidiCCLabelM3.setVisible(false);
-                MainMenuModSlider[i].setVisible(false);
+                StepperValueSliders[i].setVisible(false);
                 MainMixVolumeSliders[m].setVisible(false);
                 MainMixVolumeAudioSliders[m].setVisible(false);
               
@@ -714,8 +891,8 @@ void mainMenuMix::hideMix(int n,bool *e)
                MainMixSynt6hWaveCombo.setVisible(false);
                MainMixSynt7hWaveCombo.setVisible(false);
 
-               triggersets[b].setVisible(false);
-
+               Highlight[c].setVisible(false);
+               hgl.setVisible(false);
             }
             if (n == 1) {
                 MidiCCcombo.setVisible(false);
@@ -730,7 +907,7 @@ void mainMenuMix::hideMix(int n,bool *e)
                 MidiCCLabelM1.setVisible(false);
                 MidiCCLabelM2.setVisible(false);
                 MidiCCLabelM3.setVisible(false);
-                MainMenuModSlider[i].setVisible(true);
+                StepperValueSliders[i].setVisible(true);
                 StepperOut[b].setVisible(true);
                 Stepper1Label.setVisible(true);
                 stepini1.setVisible(true);
@@ -768,7 +945,8 @@ void mainMenuMix::hideMix(int n,bool *e)
                 MainMixSynt5hWaveCombo.setVisible(false);
                 MainMixSynt6hWaveCombo.setVisible(false);
                 MainMixSynt7hWaveCombo.setVisible(false);
-                triggersets[b].setVisible(false);
+                Highlight[c].setVisible(false);
+                hgl.setVisible(false);
             }
             if (n == 2) {
                 MidiCCcombo.setVisible(false);
@@ -783,7 +961,7 @@ void mainMenuMix::hideMix(int n,bool *e)
                 MidiCCLabelM1.setVisible(false);
                 MidiCCLabelM2.setVisible(false);
                 MidiCCLabelM3.setVisible(false);
-                MainMenuModSlider[i].setVisible(false);
+                StepperValueSliders[i].setVisible(false);
                 StepperOut[b].setVisible(false);
                 Stepper1Label.setVisible(false);
                 MainMixVolumeSliders[m].setVisible(true);
@@ -823,7 +1001,8 @@ void mainMenuMix::hideMix(int n,bool *e)
                MainMixSynt6hWaveCombo.setVisible(e[5]);
                MainMixSynt7hWaveCombo.setVisible(e[6]);
 
-               triggersets[b].setVisible(false);
+               Highlight[c].setVisible(false);
+               hgl.setVisible(false);
             }
 
             if (n == 3) {
@@ -839,7 +1018,7 @@ void mainMenuMix::hideMix(int n,bool *e)
                 MidiCCLabelM1.setVisible(false);
                 MidiCCLabelM2.setVisible(false);
                 MidiCCLabelM3.setVisible(false);
-                MainMenuModSlider[i].setVisible(false);
+                StepperValueSliders[i].setVisible(false);
                 MainMixVolumeSliders[m].setVisible(false);
                 MainMixVolumeAudioSliders[m].setVisible(false);
 
@@ -882,11 +1061,12 @@ void mainMenuMix::hideMix(int n,bool *e)
                 MainMixSynt6hWaveCombo.setVisible(false);
                 MainMixSynt7hWaveCombo.setVisible(false);
 
-                triggersets[b].setVisible(true);
+                Highlight[c].setVisible(true);
+                hgl.setVisible(true);
             }
             if (n == 4) {
 
-                MainMenuModSlider[i].setVisible(false);
+                StepperValueSliders[i].setVisible(false);
                 MainMixVolumeSliders[m].setVisible(false);
                 MainMixVolumeAudioSliders[m].setVisible(false);
 
@@ -928,7 +1108,8 @@ void mainMenuMix::hideMix(int n,bool *e)
                 MainMixSynt6hWaveCombo.setVisible(false);
                 MainMixSynt7hWaveCombo.setVisible(false);
 
-                triggersets[b].setVisible(false);
+                Highlight[c].setVisible(false);
+                hgl.setVisible(false);
                 MidiCCcombo.setVisible(true);
                 MidiCCLabel.setVisible(true);
                 MidiCCLabel1.setVisible(true);
@@ -943,232 +1124,10 @@ void mainMenuMix::hideMix(int n,bool *e)
                 MidiCCLabelM3.setVisible(true);
             }
             }
+            }
         }
     }
-}
-
-
-bool statepatterns[11];
-int changeSt[11][11][17];
-void mainMenuMix::setHideColors1( int *c,int s,int p)
-{
-   
-    for (int i = 0; i < 16; i++)
-        changeSt[s][p][i] = c[i];
-    changeStepperColor(s,p);
- 
-}
-
-void mainMenuMix::setHideColors2(int* c, int s, int p)
-{
-    for (int i = 0; i < 16; i++)
-        changeSt[s][p][i] = c[i];
-    changeStepperColor(s,p);
-}
-
-void mainMenuMix::setHideColors3(int* c, int s, int p)
-{
-    for (int i = 0; i < 16; i++)
-        changeSt[s][p][i] = c[i];
-    changeStepperColor(s,p);
-}
-
-void mainMenuMix::setHideColors4(int* c, int s, int p)
-{
-    for (int i = 0; i < 16; i++)
-        changeSt[s][p][i] = c[i];
-    changeStepperColor(s,p);
-}
-
-void mainMenuMix::setHideColors5(int* c, int s, int p)
-{
-    for (int i = 0; i < 16; i++)
-        changeSt[s][p][i] = c[i];
-    changeStepperColor(s, p);
-}
-
-void mainMenuMix::setHideColors6(int* c, int s, int p)
-{
-    for (int i = 0; i < 16; i++)
-        changeSt[s][p][i] = c[i];
-    changeStepperColor(s, p);
-    }
-
-void mainMenuMix::setHideColors7(int* c, int s, int p)
-{
-    for (int i = 0; i < 16; i++)
-        changeSt[s][p][i] = c[i];
-    changeStepperColor(s, p);
-}
-
-void mainMenuMix::setPatternState(bool* s)
-{
- 
-    memcpy(patternstate, s, 8 * sizeof(bool));
-}
-int pattern[8];
-void mainMenuMix::changeStepperColor(int s,int p)
-{
-    
-
-   
-    if (patternstate[s] == false) { pattern[s] = 0; }
-
-    if (patternstate[s] == true) { pattern[s] = p; }
-     for (int i = 0; i < 16; ++i) {
-            if (changeSt[s][pattern[s]][i] > 0) {
-                MainMenuModSlider[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::grey);
-               
-            }
-            if (changeSt[s][pattern[s]][i] == 0) {
-                MainMenuModSlider[i].setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::blue);
-               
-            }
-           MainMenuModSlider[i].setValue(stepsOut[s][pattern[s]][i], juce::dontSendNotification);
-        
-    }
-   
-    
-}
-
-void mainMenuMix::paint(juce::Graphics&)
-{
-}
-
-void mainMenuMix::resized()
-{
-}
-double spv[16];
-int on2[8];
-void mainMenuMix::InitPatternSteps(int e,int s,int m,bool*st,int p)
-{
-    if (s >0) {
-        if (st[s] == false) { on[s] = 0; }
-
-        if (st[s] == true) { on[s] = p; }
-              for (int v = 0; v < 16; v++)
-                {
-                    if (m == 0) {
-                        MainMenuModSlider[v].setValue(0.5, juce::dontSendNotification);
-                        stepsOut[s][on[s]][v] = 0.5;// MainMenuModSlider[v].getValue();
-                  
-                    }
-                    
-                    if (m == 1) {
-                        MainMenuModSlider[v].setValue(stepDnini[v], juce::dontSendNotification);
-                        stepsOut[s][on[s]][v] = stepDnini[v];// MainMenuModSlider[v].getValue();
-                       
-                    }
-                    if (m == 2) {
-                        MainMenuModSlider[v].setValue(stepupini[v], juce::dontSendNotification);
-                        stepsOut[s][on[s]][v] = stepupini[v];// MainMenuModSlider[v].getValue();
-                       
-                    }
-                    if (m == 3) {
-                        MainMenuModSlider[v].setValue(stepsinini[v], juce::dontSendNotification);
-                        stepsOut[s][on[s]][v] = stepsinini[v];// MainMenuModSlider[v].getValue();
-                     
-                    }
-                    
-                
-            } 
-              
-    }
-    s = 0;
-   
-}
-void mainMenuMix::resetPatternSteps(int s)
-{
-    for (int e = 0; e < 8; e++)
-    {
-        for (int i = 0; i < 10; i++)
-        {
-            for (int v = 0; v < 16; v++)
-            {
-                stepsOut[s][i][v]= MainMenuModSlider[v].getValue();
-
-    }
-}
-    }
-    memcpy(stepsOut[s][pattern[s]], stepsOut[s][pattern[s]], 8 * sizeof(double));
-}
-double* mainMenuMix::stepValues()
-{
-    for (int i = 0; i < 16; i++)
-    {
-        spv[i] = MainMenuModSlider[i].getValue();
-    }
-    return spv;
-}
-/*
-void mainMenuMix::setStepValues(double*v)
-{
-    for (int i = 0; i < 16; i++)
-    {
-      MainMenuModSlider[i].setValue(v[i],juce::dontSendNotification);
-    }
-
-}
-*/
-
-void mainMenuMix::serialStepps(AudioProcessorValueTreeState& valueTreeState ,double*v,int n,int p)
-{
-    for (int i = 0; i < 16; i++) {
-
-       stepsOut[n][p][i]= MainMenuModSlider[i].getValue();
-
-        sprintf(initsteps[n][p], "%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f"
-            , v[0],v[1],v[2],v[3],v[4],v[5],v[6],v[7],v[8],v[9],v[10],v[11],v[12],v[13],v[14],v[15]);
-
-       
-            valueTreeState.state.setProperty(StepValuesNames(i,n), var(initsteps[n][i]), nullptr);
-
-
-        }
- 
-  
-}
-
-void mainMenuMix::unSerialStepps(AudioProcessorValueTreeState& valueTreeState,int s,int p)
-{
-
-for (int n = 0; n <= 7; n++) {
-
-    for (int i = 0; i < 16; i++)
-    {
-        SteppValues[n][i].referTo(valueTreeState.state.getPropertyAsValue(StepValuesNames(i,n), nullptr, true));
-
-    }
-
-
-   
-
-       for (int pr = 0; pr <= 10; pr++) {
-           for (int i = 0; i <= 100; i += 5) {
-
-
-               stepsOut[n][pr][i / 5] = SteppValues[n][pr].getValue().toString().substring(i, i + 4).getDoubleValue();
-          
-
-           }
-       }
-   }
-  
-    for (int i = 0; i < 16; i++)
-    {
-
-       MainMenuModSlider[i].setValue(stepsOut[s][p][i],juce::dontSendNotification);
-
-
-     
-
-    }
-
-
-
-}
-
-int mainMenuMix::SpAudioSetValue()
+}int mainMenuMix::SpAudioSetValue()
 {
     int v = 0;
     if (SpAudioSet1[0].getToggleState() > 0) { v = 0; }
@@ -1252,16 +1211,14 @@ int mainMenuMix::SpAudioSet7Value()
     return v;
 }
 
-int mainMenuMix::getTriggerInitSetsValue()
+int mainMenuMix::getHighlightValue()
 {
     int v = 0;
-    if (triggersets[0].getToggleState() == true) { v= 0; }
-    if (triggersets[1].getToggleState() == true) { v = 1; }
-    if (triggersets[2].getToggleState() == true) { v = 2; }
-    if (triggersets[3].getToggleState() == true) { v = 3; }
-    if (triggersets[4].getToggleState() == true) { v = 3; }
+    if (Highlight[0].getToggleState() == true) { v= 0; }
+    if (Highlight[1].getToggleState() == true) { v = 1; }
+    if (Highlight[2].getToggleState() == true) { v = 2; }
+   
 
 
     return v;
 }
-

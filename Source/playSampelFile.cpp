@@ -17,8 +17,9 @@
 AudioSample::AudioSample()
 
 {
-
-
+  
+    steppdelay = 0;
+    steppcut = 0;
     waveSize=SAMPLERATEAUDIO;
     ArOn = false;
     data1 = 0;
@@ -48,7 +49,7 @@ AudioSample::AudioSample()
     }
     for(int i=0;i< MAX_VOICES;i++)
     {
-        mSampelIndxPoly[i]=0;
+        mSampelIndxPoly[i]=1920000;
         mSampelIndxPolyEnvA[i]=SAMPLERATEAUDIO -5;
         mSampelIndxPolyEnvR[i]= SAMPLERATEAUDIO -5;
   
@@ -72,6 +73,7 @@ AudioSample::AudioSample()
     
 
     filterDsLp= new discretFilterModelClass();
+    filterDsLp->initialize();
     echo =new echogeneratorModelClass();
     echo->initialize();
     comp.initialize();
@@ -107,11 +109,14 @@ void AudioSample::processAudioSampel(const int *trigger,double*out,int nFrames,i
  
     const int lenghtMod=(mp.mSampleEnd* getWaveSize());
 
-    const int startMod=mp.mSampleStart* getWaveSize();
+    const int startMod=0.1+mp.mSampleStart* getWaveSize();
 
 
-    const int Pitch =  minmaxSPPitch(1+ ((((double)mp.mSamplePitch*2) *1-(mp.mSamplePitchStepperMod-0.5*0.5)) *
-                       1- (oscillator.getSampleLfo() * mp.mSamplePitchLfoMod))* ((mp.mSamplePitchMain*2)*mp.mMainSamplePitchMod)) * getWaveSize();
+    double PitchIn = ((double)mp.mSamplePitch * 4) * 1 - (mp.mSamplePitchStepperMod - 0.5 * 0.5)
+        * 1 - (oscillator.getSampleLfo() * mp.mSamplePitchLfoMod);
+    PitchIn *= ((double)mp.mSamplePitchMain ) * (mp.mMainSamplePitchMod);
+
+    const int Pitch = minmaxSPPitch(PitchIn)* getWaveSize();
 
 
     double Level =        (((double)mp.mSampelVolume)*
@@ -130,8 +135,8 @@ void AudioSample::processAudioSampel(const int *trigger,double*out,int nFrames,i
     mp.triggerOn(Trigger);
     double rtimeA=0;
     double rtimeR=0;
-    const int AttackMod=(1-mp.mSpAttack)*SAMPLERATEAUDIO;
-    const int ReleaseMod=(1-(mp.mSpRelease))*SAMPLERATEAUDIO;
+    const int AttackMod=(1-mp.mSpAttack)* getWaveSize();
+    const int ReleaseMod=(1-(mp.mSpRelease))* getWaveSize()*4;
 
 if(trigger[3]==0 && mp.mSpLfoRtrMode>0)
 {
@@ -142,54 +147,54 @@ if(trigger[3]==0 && mp.mSpLfoRtrMode>0)
    
  //  readout[0]=Trigger;
  //   readout[1]=pCount;
+for (int s = 0; s < numSamples; s++)
+{
+    mSampleIndx++;
+    mSampelIndxMonoEnvR++;
 
-    for (int s = 0; s < numSamples; s++)
-    {   mSampleIndx++;
-        mSampelIndxMonoEnvR++;
-         
-        if(mp.mSamplePlayMode==2 &&  mp.mEngineMode==false  ){
-            
-    if (Trigger>0){
-        mSampeleMonoEnd=mSampleIndx;
-        mSampelIndxMonoEnvR = 0;
-        
-        if (mSampleIndx >= lenghtMod-1)
-            mSampleIndx = startMod;
-        resampledAudio[s] = mAudioToResample[mSampleIndx];
+    if (mp.mSamplePlayMode == 2 && mp.mEngineMode == false) {
 
-    }
-    else
-    {
-        mSampelIndxMonoEnvR = waveSize;
-        resampledAudio[s] = (mAudioToResample[mSampeleMonoEnd]);
-        
-    }
- 
-            
-                
-         rtimeR=EnvReleaseMono[mSampelIndxMonoEnvR];
-            //  readout[0]=rtimeR*1000;
-           
-          
+        if (Trigger > 0) {
+            mSampeleMonoEnd = mSampleIndx;
+            mSampelIndxMonoEnvR = 0;
+
+            if (mSampleIndx >= lenghtMod - 1)
+                mSampleIndx = startMod;
+            resampledAudio[s] = mAudioToResample[mSampleIndx];
+
         }
-    
-    if(mp.mSamplePlayMode==1 && mp.mEngineMode==false)
+        else
+        {
+            mSampelIndxMonoEnvR = waveSize;
+            resampledAudio[s] = (mAudioToResample[mSampeleMonoEnd]);
+
+        }
+
+
+
+        rtimeR = EnvReleaseMono[mSampelIndxMonoEnvR];
+        //  readout[0]=rtimeR*1000;
+
+
+    }
+
+    if (mp.mSamplePlayMode == 1 && mp.mEngineMode == false)
     {
-        
+
         for (int c = 0; c < MAX_VOICES; c++)
-        {  
+        {
             mSampelIndxPoly[c]++;
 
-
+           
             if (ArOn == true)// envelope
             {
-               
-              //  mSampelIndxPolyEnvA[c]= SAMPLERATE-5;
-             //   mSampelIndxPolyEnvR[c] = SAMPLERATE-5;
-               
+
+                //  mSampelIndxPolyEnvA[c]= SAMPLERATE-5;
+               //   mSampelIndxPolyEnvR[c] = SAMPLERATE-5;
+
                 mSampelIndxPolyEnvA[c]++;// = SAMPLERATE;
                 mSampelIndxPolyEnvR[c]++;// = SAMPLERATE;
-               
+
                 if (mSampelIndxPolyEnvA[c] >= SAMPLERATEAUDIO - 2)
                 {
                     mSampelIndxPolyEnvA[c] = SAMPLERATEAUDIO - 1;
@@ -199,8 +204,8 @@ if(trigger[3]==0 && mp.mSpLfoRtrMode>0)
                 {
                     mSampelIndxPolyEnvR[c] = SAMPLERATEAUDIO - 1;
                 }
-              
-              
+
+
 
                 if (Trigger > 0 && mSampelIndxPolyEnvR[pCount] >= getWaveSize() - 2)
                 {
@@ -212,69 +217,77 @@ if(trigger[3]==0 && mp.mSpLfoRtrMode>0)
                     mSampelIndxPolyEnvA[pCount] = AttackMod;
                 }
 
-            rtimeA = mp.SampelAttack(mSampelIndxPolyEnvA, EnvAttack.data())+1;
-            rtimeR = mp.SampelRelease(mSampelIndxPolyEnvR, EnvRelease.data());
+                rtimeA = mp.SampelAttack(mSampelIndxPolyEnvA, EnvAttack.data()) + 1;
+                rtimeR = mp.SampelRelease(mSampelIndxPolyEnvR, EnvRelease.data());
+            }
+            int stpoint = 3000;
+            int enpoint = getWaveSize();
+            if (ArOn == false) {
+                rtimeA = 1.0; rtimeR = 1.0; stpoint *= mp.mSpAttack; enpoint *= mp.mSpRelease;
             }
 
-            if (ArOn == false) {   rtimeA = 1.0; rtimeR = 1.0;     }
 
-      
-    
-   if (Trigger>0 && mSampelIndxPoly[pCount]>= getWaveSize() -2){ mSampelIndxPoly[pCount] = startMod;}
-     
 
-   
-   if (mSampelIndxPoly[c]>= getWaveSize()){ mSampelIndxPoly[c] = getWaveSize() -1;  }
+            if (Trigger > 0 && mSampelIndxPoly[pCount] >= enpoint - 2) { mSampelIndxPoly[pCount] = numSamples+stpoint; }
 
-        
+
+
+            if (mSampelIndxPoly[c] >= getWaveSize()) { mSampelIndxPoly[c] = getWaveSize() - 1; }
+
+
             resampledAudio[s] = (mAudioToResample[mSampelIndxPoly[0]]
-                                +mAudioToResample[mSampelIndxPoly[1]]
-                                +mAudioToResample[mSampelIndxPoly[2]]
-                                +mAudioToResample[mSampelIndxPoly[3]]
-                                +mAudioToResample[mSampelIndxPoly[4]]
-                                +mAudioToResample[mSampelIndxPoly[5]]
-                                +mAudioToResample[mSampelIndxPoly[6]]
-                                +mAudioToResample[mSampelIndxPoly[7]]
-                                +mAudioToResample[mSampelIndxPoly[8]]
-                                +mAudioToResample[mSampelIndxPoly[9]]
-                                +mAudioToResample[mSampelIndxPoly[10]]
-                                +mAudioToResample[mSampelIndxPoly[11]]
-                                +mAudioToResample[mSampelIndxPoly[12]]
-                                +mAudioToResample[mSampelIndxPoly[13]]
-                                +mAudioToResample[mSampelIndxPoly[14]]
-                                +mAudioToResample[mSampelIndxPoly[15]]
-                                 
-                             );
-       
-         //   data1 = mSampelIndxPolyEnvR[0];
-         //   data2 = rtimeR;
-        
-    }
-        
-    }
-   
-    }
-  
-    
-    if (mResampler.ResampleOut(out, numSamples,nFrames, 1) != nFrames)
-    {
-        //failed somehow
-        memset(out, 0 , nFrames * sizeof(double));
-    }
-    for(int i=0;i<nFrames;i++)
-    {
-        if(mp.mSamplePlayMode==1)
-        {
+                + mAudioToResample[mSampelIndxPoly[1]]
+                + mAudioToResample[mSampelIndxPoly[2]]
+                + mAudioToResample[mSampelIndxPoly[3]]
+                + mAudioToResample[mSampelIndxPoly[4]]
+                + mAudioToResample[mSampelIndxPoly[5]]
+                + mAudioToResample[mSampelIndxPoly[6]]
+                + mAudioToResample[mSampelIndxPoly[7]]
+                + mAudioToResample[mSampelIndxPoly[8]]
+                + mAudioToResample[mSampelIndxPoly[9]]
+                + mAudioToResample[mSampelIndxPoly[10]]
+                + mAudioToResample[mSampelIndxPoly[11]]
+                + mAudioToResample[mSampelIndxPoly[12]]
+                + mAudioToResample[mSampelIndxPoly[13]]
+                + mAudioToResample[mSampelIndxPoly[14]]
+                + mAudioToResample[mSampelIndxPoly[15]]
 
-        out[i] *= ((rtimeA * rtimeR) * Level);
+                );
+
+            //   data1 = mSampelIndxPolyEnvR[0];
+            //   data2 = rtimeR;
 
         }
-    if(mp.mSamplePlayMode==2)
-    {
-        out[i]*=SmootherSynth.Process(Level);
+
     }
-    }
+
 }
+
+        if (mResampler.ResampleOut(out, numSamples, nFrames, 1) != nFrames)
+        {
+            //failed somehow
+            memset(out, 0, nFrames * sizeof(double));
+        }
+        for (int i = 0; i < nFrames; i++)
+        {
+            if (mp.mSamplePlayMode == 1)
+            {
+
+                 out[i] *= ((rtimeA * rtimeR) * Level);
+               // out[i] *= SmootherSynth.Process(Level);
+
+            }
+            if (mp.mSamplePlayMode == 2)
+            {
+                out[i] *= SmootherSynth.Process(Level);
+            }
+
+
+        }
+
+    }
+
+
 
 void AudioSample::processSynthSampel(const int *trigger, double *Out, int nFrames, int *readout)
 {
@@ -289,10 +302,16 @@ void AudioSample::processSynthSampel(const int *trigger, double *Out, int nFrame
     const int size=SAMPLERATESYNTH;
     const int AttackMod=(0.75-(mp.mSynthAttack*0.72))*size;
     const int ReleaseMod=(0.875-(mp.mSynthRelease*0.87))*size;
- 
+
+
+
+   
+    
+ //data2 = oscillator.getSample();
     double rtimeA=0;
     double rtimeR=0;
-
+  // data1 = mp.mEngineMode;
+  // data2 = rtimeR;
 //    readout[0]=Trigger;
 //    readout[0]=pCount;
     oscillator.frequencylfoMod(oscillator.getSampleLfo());
@@ -353,15 +372,14 @@ void AudioSample::processSynthSampel(const int *trigger, double *Out, int nFrame
             rtimeA = 1.0; rtimeR = 1.0; }
                                                               
         
-              data1 = rtimeA;
-              data2 = rtimeR;
+           
     }
      Out[s] = (oscillator.getSample() *SmootherSynth.Process(rtimeA*rtimeR)*(level));
 
 
-  
+    
     }
-
+ 
     }
                                       
     else
@@ -371,10 +389,12 @@ void AudioSample::processSynthSampel(const int *trigger, double *Out, int nFrame
 
 void AudioSample::processOut(const int *trigger, double *Out, int nFrames, int *readout)
 {
-    
+    /*
     filterDsLp->cutofflfo(oscillator.getSampleLfo());
+    if (mp.mSampleStepperMode == 2) { filterDsLp->cutoffStepper(steppcut); }
     echo->lfoMod(oscillator.getSampleLfo());
-
+    if (mp.mSampleStepperMode == 3) { echo->delayStepper(steppdelay); }
+    */
 
     
     if(mp.mSamplePlayMode>0)
@@ -389,10 +409,12 @@ void AudioSample::processOut(const int *trigger, double *Out, int nFrames, int *
     }
     for(int s=0;s<nFrames;s++)
     {
-        
+  
          filterDsLp->step(Out[s],Out[s]);
          echo->step(Out[s],&Out[s]);
          comp.step(Out[s], -5, 4, 1, 2.15, 0.55, -0.25, Out[s]);
+        // data2 = oscillator.getSample();
+        
     }
         
         

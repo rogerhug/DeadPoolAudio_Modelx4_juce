@@ -62,13 +62,11 @@ public:
     Label MidiCCLabelM3;
     Label ut1;
     Label ut2;
-    void setStepper(int s,int p); 
+    void setEngine(int e) { changeSampler = e; changeMode(e); }
 
-    void paint(juce::Graphics&) override;
-    void resized() override;
     Label Stepper1Label;
     void init(AudioProcessorValueTreeState& valueTreeState);
-    void hideMix(int n,bool* e);
+   
     int colorsOn[16] = { 0,0,1,0,0,1,0,1,1,0,0,0,0,1,0 };
     void setPatternState(bool* s);
     bool* getPatternState() { return patternstate; }
@@ -87,28 +85,33 @@ public:
      TextButton  StepperOut[5];
      char ecm[15] = { "" };
      const char* StepModeNames(int n, int e) { sprintf(ecm, "stepperMode%.1i%.1i", n, e);  return ecm; }
-     const int stepModeValue();
-     int getMv();
-     void serialModeStepps(AudioProcessorValueTreeState& valueTreeState, int v, int n);
+     const int *stepModeValue();
+     void serialModeStepps(AudioProcessorValueTreeState& valueTreeState,int v,  int n);
      void unSerialModeStepps(AudioProcessorValueTreeState& valueTreeState, int s, int n);
 
      void changeMode(int s);
 
     //*******************************values stepper*****************************
-    Slider MainMenuModSlider[16];
+    Slider StepperValueSliders[16];
     char ecv[15] = { "" };
     void InitPatternSteps(int e,int s,int m,bool*st,int p);
     void resetPatternSteps(int s);
     const char* StepValuesNames(int n,int e) { sprintf(ecv, "steppervalue%.2i%.1i", n,e);  return ecv; }
-    double* stepValues();
+    double* stepValues(int e);
     void serialStepps(AudioProcessorValueTreeState& valueTreeState,double*v,int n,int p);
     void unSerialStepps(AudioProcessorValueTreeState& valueTreeState,int s,int n);
+    double* steppVunSerial(int e);
+
+
+
     TextButton stepini1;
     TextButton stepini2;
     TextButton stepini3;
     TextButton stepini4;
     //************************************Mixer***********************************
-
+     void hideMix(int n,bool* e);
+     char* getCIn() { return crdIn; }
+     char *getCOut() { return crd; }
     Slider MainMixVolumeSliders[8];
     Label MainMixerLabel;
     Slider MainMixPitchSynthSliders[8];
@@ -153,7 +156,7 @@ public:
   
     }
 
-
+    
    //******************************************************************************
     //******************************init-> AudioFiles***********************************
 
@@ -196,13 +199,15 @@ public:
 
 
     //***************************************intit Triggers***********************************
-    TextButton triggersets[5];
-    int getTriggerInitSetsValue();
+    TextButton Highlight[3];
+    Label hgl;
+    int getHighlightValue();
 
     //****************************************************************************
 
     //********************************************************************************
 private:
+  
     int hideAudioSynth;
     int stepmod;
     bool patternstate[8];
@@ -217,8 +222,8 @@ private:
     int changeSampler;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(mainMenuMix)
 
-      
-    
+     char crd[30];
+    char crdIn[30];
 
    
 };

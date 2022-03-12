@@ -408,10 +408,11 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
         };
     
         audioProcessor.mainp.SamplerEngineTemp.onValueChange = [this] {
-        hideControlMain(audioProcessor.mainp.SamplerEngineTemp.getValue());
-        audioProcessor.stepperWave.setStepper(audioProcessor.mainp.SamplerEngineTemp.getValue(), audioProcessor.mainp.TriggerProgramm10.getValue());
-        audioProcessor.stepperWave.changeMode(audioProcessor.mainp.SamplerEngineTemp.getValue());
-        audioProcessor.stepperWave.changeStepperColor(audioProcessor.mainp.SamplerEngineTemp.getValue(), 0);
+        const int engine = audioProcessor.mainp.SamplerEngineTemp.getValue();
+        hideControlMain(engine);
+        audioProcessor.stepperWave.setEngine(engine);
+        audioProcessor.stepperWave.changeStepperColor(audioProcessor.mainp.SamplerEngineTemp.getValue(), audioProcessor.mainp.MainTriggerPrNr());
+
 
        
     };
@@ -653,121 +654,98 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
 
         audioProcessor.stepperWave.StepperOut[i].onClick = [this] {
             const int spp = audioProcessor.mainp.SamplerEngineTemp.getValue();
-           
-            
-           
-            
-           
-           
-            audioProcessor.stepperWave.serialModeStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepModeValue(), spp);
-      
-            if (spp == 0) { audioProcessor.sp1.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue();
-             audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.stepValues(),0, audioProcessor.stepperWave.stepModeValue());
-            }
-            if (spp == 1) { audioProcessor.sp2.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue();
-            audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.stepValues(), 1, audioProcessor.stepperWave.stepModeValue());
-            }
-            if (spp == 2) { audioProcessor.sp3.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue();
-             audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.stepValues(), 2, audioProcessor.stepperWave.stepModeValue());
-            }
-            if (spp == 3) {
-               audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.stepValues(),3, audioProcessor.stepperWave.stepModeValue()); 
-                audioProcessor.sp4.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue(); }
-            if (spp == 4) {
-                audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.stepValues(), 4, audioProcessor.stepperWave.stepModeValue()); 
-                audioProcessor.sp5.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue();
-                        }
-            if (spp == 5) { 
-                audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.stepValues(), 5, audioProcessor.stepperWave.stepModeValue());
-                audioProcessor.sp6.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue(); }
-            if (spp == 6) {
-                 
-                audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.stepValues(), 6, audioProcessor.stepperWave.stepModeValue());
-                audioProcessor.sp7.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue(); }
-      
+            audioProcessor.stepperWave.stepModeValue()[spp];
+            audioProcessor.stepperWave.serialModeStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepModeValue()[spp], spp);
 
-
-
+            audioProcessor.sp1.mp.mSampleStepperMode= audioProcessor.stepperWave.stepModeValue()[0];
+            audioProcessor.sp2.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[1];
+            audioProcessor.sp3.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[2];
+            audioProcessor.sp4.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[3];
+            audioProcessor.sp5.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[4];
+            audioProcessor.sp6.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[5];
+            audioProcessor.sp7.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[6];
+          
         };
     }
-
+  
   audioProcessor.stepperWave.stepini1.onClick = [this] {
    audioProcessor.stepperWave.InitPatternSteps(audioProcessor.mainp.SamplerEngineTemp.getValue(), 1,0, enginePatternState, audioProcessor.mainp.TriggerProgramm10.getValue());
       
-  audioProcessor.stepperWave.serialStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepValues(), audioProcessor.mainp.SamplerEngineTemp.getValue(), audioProcessor.mainp.TriggerProgramm10.getValue());
+  audioProcessor.stepperWave.serialStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepValues(audioProcessor.mainp.SamplerEngineTemp.getValue()), audioProcessor.mainp.SamplerEngineTemp.getValue(), audioProcessor.mainp.TriggerProgramm10.getValue());
   const int spp = audioProcessor.mainp.SamplerEngineTemp.getValue()+1;
-  if (spp == 1) {  audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.stepValues(), 0, audioProcessor.stepperWave.stepModeValue()); }
-  if (spp == 2) {  audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.stepValues(), 1, audioProcessor.stepperWave.stepModeValue()); }
-  if (spp == 3) {  audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.stepValues(), 2, audioProcessor.stepperWave.stepModeValue()); }
-  if (spp == 4) {  audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.stepValues(), 3, audioProcessor.stepperWave.stepModeValue()); }
-  if (spp == 5) {  audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.stepValues(), 4, audioProcessor.stepperWave.stepModeValue()); }
-  if (spp == 6) {  audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.stepValues(), 5, audioProcessor.stepperWave.stepModeValue()); }
-  if (spp == 7) {  audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.stepValues(), 6, audioProcessor.stepperWave.stepModeValue()); }
+  if (spp == 1) {  audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.stepValues(0), 0, audioProcessor.stepperWave.stepModeValue()[0]); }
+  if (spp == 2) {  audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.stepValues(1), 1, audioProcessor.stepperWave.stepModeValue()[1]); }
+  if (spp == 3) {  audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.stepValues(2), 2, audioProcessor.stepperWave.stepModeValue()[2]); }
+  if (spp == 4) {  audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.stepValues(3), 3, audioProcessor.stepperWave.stepModeValue()[3]); }
+  if (spp == 5) {  audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.stepValues(4), 4, audioProcessor.stepperWave.stepModeValue()[4]); }
+  if (spp == 6) {  audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.stepValues(5), 5, audioProcessor.stepperWave.stepModeValue()[5]); }
+  if (spp == 7) {  audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.stepValues(6), 6, audioProcessor.stepperWave.stepModeValue()[6]); }
   };
   
   audioProcessor.stepperWave.stepini2.onClick = [this] {
  
       audioProcessor.stepperWave.InitPatternSteps(audioProcessor.mainp.SamplerEngineTemp.getValue(), 1, 1, enginePatternState, audioProcessor.mainp.TriggerProgramm10.getValue());
-      audioProcessor.stepperWave.serialStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepValues(), audioProcessor.mainp.SamplerEngineTemp.getValue(), audioProcessor.mainp.TriggerProgramm10.getValue());
+      audioProcessor.stepperWave.serialStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepValues(audioProcessor.mainp.SamplerEngineTemp.getValue()), audioProcessor.mainp.SamplerEngineTemp.getValue(), audioProcessor.mainp.TriggerProgramm10.getValue());
       const int spp = audioProcessor.mainp.SamplerEngineTemp.getValue()+1;
-      if (spp == 1) { audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.stepValues(), 0, audioProcessor.stepperWave.stepModeValue()); }
-      if (spp == 2) {audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.stepValues(), 1, audioProcessor.stepperWave.stepModeValue());  }
-      if (spp == 3) { audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.stepValues(), 2, audioProcessor.stepperWave.stepModeValue()); }
-      if (spp == 4) { audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.stepValues(), 3, audioProcessor.stepperWave.stepModeValue()); }
-      if (spp == 5) { audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.stepValues(), 4, audioProcessor.stepperWave.stepModeValue()); }
-      if (spp == 6) { audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.stepValues(), 5, audioProcessor.stepperWave.stepModeValue()); }
-      if (spp == 7) { audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.stepValues(), 6, audioProcessor.stepperWave.stepModeValue());  }
+      if (spp == 1) { audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.stepValues(0), 0, audioProcessor.stepperWave.stepModeValue()[0]); }
+      if (spp == 2) {audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.stepValues(1), 1, audioProcessor.stepperWave.stepModeValue()[1]);  }
+      if (spp == 3) { audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.stepValues(2), 2, audioProcessor.stepperWave.stepModeValue()[2]); }
+      if (spp == 4) { audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.stepValues(3), 3, audioProcessor.stepperWave.stepModeValue()[3]); }
+      if (spp == 5) { audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.stepValues(4), 4, audioProcessor.stepperWave.stepModeValue()[4]); }
+      if (spp == 6) { audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.stepValues(5), 5, audioProcessor.stepperWave.stepModeValue()[5]); }
+      if (spp == 7) { audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.stepValues(6), 6, audioProcessor.stepperWave.stepModeValue()[6]);  }
   };
   audioProcessor.stepperWave.stepini3.onClick = [this] {
 
       audioProcessor.stepperWave.InitPatternSteps(audioProcessor.mainp.SamplerEngineTemp.getValue(), 1, 2, enginePatternState, audioProcessor.mainp.TriggerProgramm10.getValue());
-      audioProcessor.stepperWave.serialStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepValues(), audioProcessor.mainp.SamplerEngineTemp.getValue(), audioProcessor.mainp.TriggerProgramm10.getValue());
+      audioProcessor.stepperWave.serialStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepValues(audioProcessor.mainp.SamplerEngineTemp.getValue()), audioProcessor.mainp.SamplerEngineTemp.getValue(), audioProcessor.mainp.TriggerProgramm10.getValue());
       const int spp = audioProcessor.mainp.SamplerEngineTemp.getValue()+1;
-      if (spp == 1) { audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-      if (spp == 2) { audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-      if (spp == 3) { audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-      if (spp == 4) { audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-      if (spp == 5) { audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-      if (spp == 6) { audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-      if (spp == 7) { audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
+      if (spp == 1) { audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.stepValues(0), spp, audioProcessor.stepperWave.stepModeValue()[0]); }
+      if (spp == 2) { audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.stepValues(1), spp, audioProcessor.stepperWave.stepModeValue()[1]); }
+      if (spp == 3) { audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.stepValues(2), spp, audioProcessor.stepperWave.stepModeValue()[2]); }
+      if (spp == 4) { audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.stepValues(3), spp, audioProcessor.stepperWave.stepModeValue()[3]); }
+      if (spp == 5) { audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.stepValues(4), spp, audioProcessor.stepperWave.stepModeValue()[4]); }
+      if (spp == 6) { audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.stepValues(5), spp, audioProcessor.stepperWave.stepModeValue()[5]); }
+      if (spp == 7) { audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.stepValues(6), spp, audioProcessor.stepperWave.stepModeValue()[6]); }
   };
       audioProcessor.stepperWave.stepini4.onClick = [this] {
 
           audioProcessor.stepperWave.InitPatternSteps(audioProcessor.mainp.SamplerEngineTemp.getValue(), 1, 3, enginePatternState, audioProcessor.mainp.TriggerProgramm10.getValue());
  
-          audioProcessor.stepperWave.serialStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepValues(), audioProcessor.mainp.SamplerEngineTemp.getValue(), audioProcessor.mainp.TriggerProgramm10.getValue());
+          audioProcessor.stepperWave.serialStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepValues(audioProcessor.mainp.SamplerEngineTemp.getValue()), audioProcessor.mainp.SamplerEngineTemp.getValue(), audioProcessor.mainp.TriggerProgramm10.getValue());
           const int spp = audioProcessor.mainp.SamplerEngineTemp.getValue()+1;
-          if (spp == 1) { audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-          if (spp == 2) { audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-          if (spp == 3) { audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-          if (spp == 4) { audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-          if (spp == 5) { audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-          if (spp == 6) { audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-          if (spp == 7) { audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
+          if (spp == 1) { audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.stepValues(0), spp, audioProcessor.stepperWave.stepModeValue()[0]); }
+          if (spp == 2) { audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.stepValues(1), spp, audioProcessor.stepperWave.stepModeValue()[1]); }
+          if (spp == 3) { audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.stepValues(2), spp, audioProcessor.stepperWave.stepModeValue()[2]); }
+          if (spp == 4) { audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.stepValues(3), spp, audioProcessor.stepperWave.stepModeValue()[3]); }
+          if (spp == 5) { audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.stepValues(4), spp, audioProcessor.stepperWave.stepModeValue()[4]); }
+          if (spp == 6) { audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.stepValues(5), spp, audioProcessor.stepperWave.stepModeValue()[5]); }
+          if (spp == 7) { audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.stepValues(6), spp, audioProcessor.stepperWave.stepModeValue()[6]); }
       
   };
    
     for (int i = 0; i < 16; i++) {             //-----------------------------value----------
    
-        audioProcessor.stepperWave.MainMenuModSlider[i].onValueChange = [this] {
-         const int spp = audioProcessor.mainp.SamplerEngineTemp.getValue()+1;
-         if (spp == 1) { audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-         if (spp == 2) { audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-         if (spp == 3) { audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-         if (spp == 4) { audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-         if (spp == 5) { audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-         if (spp == 6) { audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-         if (spp == 7) { audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.stepValues(), spp, audioProcessor.stepperWave.stepModeValue()); }
-        
-        audioProcessor.stepperWave.serialStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepValues(), audioProcessor.mainp.SamplerEngineTemp.getValue(), audioProcessor.mainp.MainTriggerPrNr());
-      
+        audioProcessor.stepperWave.StepperValueSliders[i].onValueChange = [this] {
+         const int spp = audioProcessor.mainp.SamplerEngineTemp.getValue();
+         
+         if (spp == 0) { audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.stepValues(0), spp, 0); }
+         if (spp == 1) { audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.stepValues(1), spp, 0); }
+         if (spp == 2) { audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.stepValues(2), spp, 0); }
+         if (spp == 3) { audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.stepValues(3), spp, 0); }
+         if (spp == 4) { audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.stepValues(4), spp, 0); }
+         if (spp == 5) { audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.stepValues(5), spp, 0); }
+         if (spp == 6) { audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.stepValues(6), spp, 0); }
+          
+        audioProcessor.stepperWave.serialStepps(audioProcessor.valueTreeState, audioProcessor.stepperWave.stepValues(spp),spp, 0);
+    
         };
     }
   
      //************************************************************************************************
     //---------------------------------------Wave sets init-------------------------------------------
     //************************************************************************************************
-  //  audioProcessor.stepperWave.SpAudioSet1[0].setToggleState(true,juce::dontSendNotification);
+    audioProcessor.stepperWave.SpAudioSet1[0].setToggleState(true,juce::dontSendNotification);
   
     for (int b = 0; b < 5; b++) {
           audioProcessor.stepperWave.SpAudioSet1[b].onClick = [this] {
@@ -818,41 +796,27 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
             updateSampleParas();
             audioProcessor.loadSample(6);
         };
-        
+      }    
   //**********************************************************************************/
-    //***************************************Triggersets-init********************
+    //***************************************Highlights/ repaint() funkt cpu up1% ********************
     //*****************************************************************************
-        audioProcessor.stepperWave.triggersets[b].onClick = [this] {
+        for (int i = 0; i < 3; i++) {
+            audioProcessor.stepperWave.Highlight[i].onClick = [this] {
 
+                audioProcessor.meterV.show(audioProcessor.stepperWave.getHighlightValue());
+                audioProcessor.stpV.show(audioProcessor.stepperWave.getHighlightValue());
+                if (audioProcessor.stepperWave.getHighlightValue() == 2)
+                {
+                    audioProcessor.stpV.setVisible(true);
+                 }
+                else
+                    audioProcessor.stpV.setVisible(false);
 
-                sq1.initTrSet_1(audioProcessor.valueTreeState, 0, audioProcessor.stepperWave.getTriggerInitSetsValue());
-                sq2.initTrSet_1(audioProcessor.valueTreeState, 1, audioProcessor.stepperWave.getTriggerInitSetsValue());
-                sq3.initTrSet_1(audioProcessor.valueTreeState, 2, audioProcessor.stepperWave.getTriggerInitSetsValue());
-                sq4.initTrSet_1(audioProcessor.valueTreeState, 3, audioProcessor.stepperWave.getTriggerInitSetsValue());
-                sq5.initTrSet_1(audioProcessor.valueTreeState, 4, audioProcessor.stepperWave.getTriggerInitSetsValue());
-                sq6.initTrSet_1(audioProcessor.valueTreeState, 5, audioProcessor.stepperWave.getTriggerInitSetsValue());
-                sq7.initTrSet_1(audioProcessor.valueTreeState, 6, audioProcessor.stepperWave.getTriggerInitSetsValue());
-      
-
-                audioProcessor.Ptime.trigger1In(sq1.getTriggers(0));
-                audioProcessor.Ptime.trigger2In(sq2.getTriggers(1));
-                audioProcessor.Ptime.trigger3In(sq3.getTriggers(2));
-                audioProcessor.Ptime.trigger4In(sq4.getTriggers(3));
-                audioProcessor.Ptime.trigger5In(sq5.getTriggers(4));
-                audioProcessor.Ptime.trigger6In(sq6.getTriggers(5));
-                audioProcessor.Ptime.trigger7In(sq7.getTriggers(6));
-
-                audioProcessor.stepperWave.setHideColors1(sq1.getTriggers(0), 0, audioProcessor.mainp.MainTriggerPrNr());
-                audioProcessor.stepperWave.setHideColors2(sq2.getTriggers(1), 1, audioProcessor.mainp.MainTriggerPrNr());
-                audioProcessor.stepperWave.setHideColors3(sq3.getTriggers(2), 2, audioProcessor.mainp.MainTriggerPrNr());
-                audioProcessor.stepperWave.setHideColors4(sq4.getTriggers(3), 3, audioProcessor.mainp.MainTriggerPrNr());
-               
-
-        };
+            };
+        }
 
 
 
-  }
 
 
     //***************************************timers*****************************
@@ -926,9 +890,15 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
 
     
             //--------------------------------change steps--------------------------
-           // audioProcessor.stepperWave.changeStepperColor(audioProcessor.mainp.SamplerEngineTemp.getValue(),pattern);
-          
+            audioProcessor.stepperWave.changeStepperColor(audioProcessor.mainp.SamplerEngineTemp.getValue(),pattern);
 
+            audioProcessor.stepperWave.setHideColors1(sq1.getTriggers(0), 0, pattern);
+            audioProcessor.stepperWave.setHideColors2(sq2.getTriggers(1), 1, pattern);
+            audioProcessor.stepperWave.setHideColors3(sq3.getTriggers(2), 2, pattern);
+            audioProcessor.stepperWave.setHideColors4(sq4.getTriggers(3), 3, pattern);
+            audioProcessor.stepperWave.setHideColors5(sq5.getTriggers(4), 4, pattern);
+            audioProcessor.stepperWave.setHideColors6(sq6.getTriggers(5), 5, pattern);
+            audioProcessor.stepperWave.setHideColors7(sq7.getTriggers(6), 6, pattern);
              
         
         if (audioProcessor.esp1.PatternState.getToggleState() == true) {
@@ -1053,6 +1023,7 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
          audioProcessor.esp1.EngineHideControl();
           audioProcessor.stepperWave.MainMixerEngineHideControl(0, engineSwitch); 
 
+
     };
      audioProcessor.esp1.SampelGate.onValueChange=[this]{
         audioProcessor.sp1.mp.mSqGate = audioProcessor.esp1.SampelGate.getValue();
@@ -1167,7 +1138,7 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
    audioProcessor.esp1.EnvelopeMode.setToggleState(false, juce::dontSendNotification);
    audioProcessor.esp1.EnvelopeMode.onClick = [this] {
         audioProcessor.sp1.setAr(audioProcessor.esp1.EnvelopeMode.getToggleState());
-       audioProcessor.esp1.hidecontrollAr();
+        audioProcessor.esp1.h1();
     };
 
     
@@ -1292,10 +1263,15 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
     audioProcessor.esp2.EngineColour=1;
     
     audioProcessor.esp2.playTimeModeCombo.onChange=[this]{
+
         audioProcessor.Ptime.setDivides(audioProcessor.esp2.playTimeModeCombo.getSelectedItemIndex(), 1);
-     
-        audioProcessor.sp2.mp.mTimeMode = audioProcessor.esp2.playTimeModeCombo.getSelectedItemIndex();
+         audioProcessor.sp2.mp.mTimeMode = audioProcessor.esp2.playTimeModeCombo.getSelectedItemIndex();
         audioProcessor.stepperWave.setSp2TimeCombo(audioProcessor.sp2.mp.mTimeMode);
+
+
+        
+
+
     };
     audioProcessor.esp2.EngineMenuButton.onClick=[this]{
         audioProcessor.sp2.mp.mEngineMode = audioProcessor.esp2.EngineMenuButton.getToggleState();
@@ -1320,6 +1296,9 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
     audioProcessor.esp2.synthLevelSlider.onValueChange=[this]{
         audioProcessor.sp2.mp.mSynthLevel=audioProcessor.esp2.synthLevelSlider.getValue();
         audioProcessor.stepperWave.MainMixVolumeSliders[1].setValue(audioProcessor.esp2.synthLevelSlider.getValue());
+
+     
+
     };
     audioProcessor.esp2.synthLevelSliderMod.onValueChange=[this]{
         audioProcessor.sp2.mp.mSynthLevelMod=audioProcessor.esp2.synthLevelSliderMod.getValue();
@@ -1330,6 +1309,10 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
         audioProcessor.stepperWave.MainMixPitchSynthSliders[1].setValue(audioProcessor.esp2.noteNumberSlider.getValue());
            audioProcessor.stepperWave.MainMixPitchSynthSliders[1].setTextValueSuffix(MidiMessage::getMidiNoteName(
             (int)audioProcessor.esp2.noteNumberSlider.getValue(), true, true, 4));
+
+
+
+        
     };
     audioProcessor.esp2.noteNumberSliderMod.onValueChange=[this]{
         audioProcessor.sp2.oscillator.setFrequencyMod(audioProcessor.esp2.noteNumberSliderMod.getValue());
@@ -1411,7 +1394,8 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
     };
       audioProcessor.esp2.EnvelopeMode.onClick = [this] {
         audioProcessor.sp2.setAr(audioProcessor.esp2.EnvelopeMode.getToggleState());
-        audioProcessor.esp2.hidecontrollAr();
+       
+        audioProcessor.esp2.h1();
     };
       audioProcessor.esp2.WaveSizes_t.onValueChange = [this] {
           espWsize_T[1] = audioProcessor.esp2.WaveSizes_t.getValue();
@@ -3254,7 +3238,7 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
     audioProcessor.mainp.meterIn(0.5);
 
 
-    
+    addAndMakeVisible(audioProcessor.stpV);
 
 
 
@@ -3299,7 +3283,7 @@ void NewProjectAudioProcessorEditor::resized()
      MasterMenu.setBounds(100, 0, 650, 30);
      audioProcessor.meterV.setBounds(650, 320, 20, 65);
    //  MidiCCcombo.setBounds(100, 560, 500, 20);
-  
+     audioProcessor.stpV.setBounds(70, 55, 630, 5);
 
      audioProcessor.mainp.setBounds(10,30,700,660);
      audioProcessor.stepperWave.setBounds(70, 60, 650, 210);
@@ -3354,23 +3338,21 @@ if (audioProcessor.midiCCupdate > 0){ updateMidiCCParas(); }
 
  // sprintf(dbtx,"%i" ,audioProcessor.esp1.SampelN1.isMouseButtonDown());
 /*
-sprintf(dbt, "|para1| %f ||  para2| %f  para3 %f para 4 %f para 5 %i",
-    audioProcessor.Ptime.getdataOut()[0]
+sprintf(dbt, "|para1| %f ||  para2| %f  para3 %i para 4 %i ",
+   audioProcessor.sp1.getDataD2()
+    , audioProcessor.sp1.getDataD()
     , audioProcessor.Ptime.getdataOut()[1]
-    , audioProcessor.Ptime.getdataOut()[2]
-    //  , audioProcessor.read1[4]
-   //   , audioProcessor.read1[5]
-    , audioProcessor.Ptime.getdataOut()[6]
-    , audioProcessor.getBlockSize()
+    , audioProcessor.read1[0]
+
     );
     const int ur1 = audioProcessor.esp1.SampelN1.getValue();
 
     audioProcessor.mainp.timeLabel.setText(dbt, juce::dontSendNotification);
-    //    audioProcessor.mainp.timeLabel.setText(audioProcessor.urls.getUrl1V()[ur1].toString(), juce::dontSendNotification);
+    //    audioProcessor.mainp.timeLabel.setText(audioProcessor.stepperWave.getCOut(), juce::dontSendNotification);
 
- 
  */
-
+ 
+ 
     
     
  //   audioProcessor.undoManager.beginNewTransaction();
@@ -3475,17 +3457,49 @@ void NewProjectAudioProcessorEditor::updateTriggerParas() {
      audioProcessor.stepperWave.setHideColors4(sq4.getTriggers(7), 7, audioProcessor.mainp.MainTriggerPrNr());
 
      //**********************************************************stepper***********************************
-     
+     const int spp = audioProcessor.mainp.SamplerEngineTemp.getValue();
          for (int p = 0; p < 10; p++) {
-         audioProcessor.stepperWave.unSerialStepps(audioProcessor.valueTreeState, audioProcessor.mainp.SamplerEngineTemp.getValue(),p);
-         audioProcessor.stepperWave.unSerialModeStepps(audioProcessor.valueTreeState, audioProcessor.mainp.SamplerEngineTemp.getValue(), p);
+             for (int e = 0; e < 7; e++) {
+                 
+                 audioProcessor.stepperWave.unSerialStepps(audioProcessor.valueTreeState, spp, 0);
+                 audioProcessor.stepperWave.unSerialModeStepps(audioProcessor.valueTreeState, e, 0);
 
+            
+                 audioProcessor.sp1.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[0];
+                 audioProcessor.sp2.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[1];
+                 audioProcessor.sp3.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[2];
+                 audioProcessor.sp4.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[3];
+                 audioProcessor.sp5.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[4];
+                 audioProcessor.sp6.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[5];
+                 audioProcessor.sp7.mp.mSampleStepperMode = audioProcessor.stepperWave.stepModeValue()[6];
+
+            
+                audioProcessor.stepFunkt1.setMainStepper(audioProcessor.stepperWave.steppVunSerial(0), 0, 0); 
+                audioProcessor.stepFunkt2.setMainStepper(audioProcessor.stepperWave.steppVunSerial(1), 1, 0);
+                audioProcessor.stepFunkt3.setMainStepper(audioProcessor.stepperWave.steppVunSerial(2), 2, 0);
+                audioProcessor.stepFunkt4.setMainStepper(audioProcessor.stepperWave.steppVunSerial(3), 3, 0);
+                audioProcessor.stepFunkt5.setMainStepper(audioProcessor.stepperWave.steppVunSerial(4), 4, 0);
+                audioProcessor.stepFunkt6.setMainStepper(audioProcessor.stepperWave.steppVunSerial(5), 5, 0);
+                audioProcessor.stepFunkt7.setMainStepper(audioProcessor.stepperWave.steppVunSerial(6), 6, 0);
+
+
+
+                audioProcessor.stepperWave.setHideColors1(sq1.getTriggers(0), 0, p);
+                audioProcessor.stepperWave.setHideColors2(sq2.getTriggers(1), 1, p);
+                audioProcessor.stepperWave.setHideColors3(sq3.getTriggers(2), 2, p);
+                audioProcessor.stepperWave.setHideColors4(sq4.getTriggers(3), 3, p);
+                audioProcessor.stepperWave.setHideColors5(sq5.getTriggers(4), 4, p);
+                audioProcessor.stepperWave.setHideColors6(sq6.getTriggers(5), 5, p);
+                audioProcessor.stepperWave.setHideColors7(sq7.getTriggers(6), 6, p);
+
+
+             }
 
         } 
 
     //***********************************************************mixer**************************************
 
-         engineSwitch[0] =audioProcessor.esp1.EngineMenuButton.getToggleState();
+         engineSwitch[0] = audioProcessor.esp1.EngineMenuButton.getToggleState();
          engineSwitch[1] = audioProcessor.esp2.EngineMenuButton.getToggleState();
          engineSwitch[2] = audioProcessor.esp3.EngineMenuButton.getToggleState();
          engineSwitch[3] = audioProcessor.esp4.EngineMenuButton.getToggleState();
@@ -3494,8 +3508,16 @@ void NewProjectAudioProcessorEditor::updateTriggerParas() {
          engineSwitch[6] = audioProcessor.esp7.EngineMenuButton.getToggleState();
          for (int s = 0; s < 7; s++) {
              audioProcessor.stepperWave.MainMixerEngineHideControl(s, engineSwitch);
+           
          }
-   
+         const int engine = audioProcessor.mainp.SamplerEngineTemp.getValue();
+         audioProcessor.mainp.SamplerEngine[engine].setToggleState(true, juce::dontSendNotification);
+         hideControlMain(engine);
+         audioProcessor.stepperWave.setEngine(engine);
+         audioProcessor.stepperWave.changeStepperColor(engine, audioProcessor.mainp.MainTriggerPrNr());
+
+
+        
 
 }
 

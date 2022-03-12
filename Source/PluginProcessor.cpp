@@ -193,6 +193,7 @@ void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
 
     Ptime.prepare(getSampleRate(), getBlockSize());
     Ptime.timerChrono(parameters.EngineSelectValue);
+    Ptime.tm1.Start();
 
     meterV.meterIn(0.0);
     sp1.reset();
@@ -276,19 +277,19 @@ void NewProjectAudioProcessor::mainModLfo() {
     
         if(sp1.mp.mEngineMode==true){sp1.oscillator.setLfoMainPitchSynth(1-phaselfo);}
         if(sp1.mp.mEngineMode==false){sp1.mp.mMainSamplePitchMod= 1-phaselfo*1;}
-        if(sp2.mp.mEngineMode==true){sp2.oscillator.setLfoMainPitchSynth(phaselfo);}
+        if(sp2.mp.mEngineMode==true){sp2.oscillator.setLfoMainPitchSynth(1-phaselfo);}
         if(sp2.mp.mEngineMode==false){sp2.mp.mMainSamplePitchMod= 1-phaselfo;}
-        if(sp3.mp.mEngineMode==true){sp3.oscillator.setLfoMainPitchSynth(phaselfo);}
+        if(sp3.mp.mEngineMode==true){sp3.oscillator.setLfoMainPitchSynth(1-phaselfo);}
         if(sp3.mp.mEngineMode==false){sp3.mp.mMainSamplePitchMod= 1-phaselfo;}
-        if(sp4.mp.mEngineMode==true){sp4.oscillator.setLfoMainPitchSynth(phaselfo);}
+        if(sp4.mp.mEngineMode==true){sp4.oscillator.setLfoMainPitchSynth(1-phaselfo);}
         if(sp4.mp.mEngineMode==false){sp4.mp.mMainSamplePitchMod= 1-phaselfo;}
-        if (sp5.mp.mEngineMode == true) { sp5.oscillator.setLfoMainPitchSynth(phaselfo); }
+        if (sp5.mp.mEngineMode == true) { sp5.oscillator.setLfoMainPitchSynth(1-phaselfo); }
         if (sp5.mp.mEngineMode == false) { sp5.mp.mMainSamplePitchMod = 1 - phaselfo; }
-        if (sp6.mp.mEngineMode == true) { sp6.oscillator.setLfoMainPitchSynth(phaselfo); }
+        if (sp6.mp.mEngineMode == true) { sp6.oscillator.setLfoMainPitchSynth(1-phaselfo); }
         if (sp6.mp.mEngineMode == false) { sp6.mp.mMainSamplePitchMod = 1 - phaselfo; }
-        if (sp7.mp.mEngineMode == true) { sp7.oscillator.setLfoMainPitchSynth(phaselfo); }
+        if (sp7.mp.mEngineMode == true) { sp7.oscillator.setLfoMainPitchSynth(1-phaselfo); }
         if (sp7.mp.mEngineMode == false) { sp7.mp.mMainSamplePitchMod = 1 - phaselfo; }
-
+        
     
     }
      
@@ -394,14 +395,13 @@ void NewProjectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 if(parameters.TimerModeV.getIndex()>0 && lastPosInfo.isPlaying==ApVst)
     
 {
+    
   
-  
-        mainModLfo();
+     mainModLfo();
     stepFunkt1.mStepper(sp1,Ptime.getHtime1());
     sp1.processOut(Ptime.getHtime1(),buff1,nFrames,read1);
     stepFunkt2.mStepper(sp2, Ptime.getHtime2());
     sp2.processOut(Ptime.getHtime2(),buff2,nFrames,read1);
-   
     sp3.processOut(Ptime.getHtime3(),buff3,nFrames,read1);
     stepFunkt3.mStepper(sp3, Ptime.getHtime3());
     sp4.processOut(Ptime.getHtime4(),buff4,nFrames,read1);
@@ -412,13 +412,13 @@ if(parameters.TimerModeV.getIndex()>0 && lastPosInfo.isPlaying==ApVst)
     stepFunkt6.mStepper(sp6, Ptime.getHtime6());
     sp7.processOut(Ptime.getHtime7(), buff7, nFrames, read1);
     stepFunkt7.mStepper(sp7, Ptime.getHtime7());
-
+    
     for (int so = 0; so < nFrames; so++)
     {
        // compm.step(buff1[so] + buff2[so] + buff3[so] + buff4[so] + buff5[so] + buff6[so] + buff7[so], 0, 1, 4, 0.05, 0.25, 0.0, buffFx[so]);
       buffFx[so] = (buff1[so] + buff2[so] + buff3[so] + buff4[so]+ buff5[so] +buff6[so] +buff7[so] /**/);
-   //   buffFx[so] = buff1[so];
-      
+     // buffFx[so] = buff2[so];
+      //read1[0]= buff2[so]*100;
         equalizer->step(buffFx[so], buffFx[so], read1);
        //btc->bitcrush(buffFx[so], buffFx[so], read1[8]);
         limiter->step(buffFx[so], buffFx[so]);
@@ -447,6 +447,8 @@ if(parameters.TimerModeV.getIndex()>0 && lastPosInfo.isPlaying==ApVst)
     mPrev = peakL;
 
     meterV.meterIn(mPrev);
+    const int stpU = Ptime.getHtime1()[0];
+    stpV.stepIn(stpU);
 
             
     
@@ -552,8 +554,6 @@ void NewProjectAudioProcessor::setStateInformation (const void* data, int sizeIn
     loadSample(5);
     loadSample(6);
 
-   
- 
 
 }
 

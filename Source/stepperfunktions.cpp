@@ -31,17 +31,18 @@ stepperfunktions::stepperfunktions()
 stepperfunktions::~stepperfunktions()
 {
 }
-
-void stepperfunktions::setMainStepper(double* in, int n, int mode)
+double steppsIn[8][10][16] ;
+void stepperfunktions::setMainStepper(double* in, int n, int p)
 {
     engine = n;
     for (int i = 0; i < 16; i++)
     {
-        steppers[n][i] = in[i];
+        steppsIn[n][0][i] = in[i];
     }
 }
 
-void stepperfunktions::mStepper( AudioSample& s, const int* time)
+    double ph;
+double stepperfunktions::mStepper( AudioSample& s, const int* time)
 {
    
     if (s.mp.mSampleStepperOn == true) { //********************SYNTH1********************************
@@ -51,11 +52,11 @@ void stepperfunktions::mStepper( AudioSample& s, const int* time)
 
            
             if (s.mp.mSampleStepperMode == 1) {
-                s.oscillator.setStepperPitch(steppers[engine][time[0]]);
+                s.oscillator.setStepperPitch(steppsIn[engine][0][time[0]]);
             }
             if (s.mp.mSampleStepperMode == 4) {
 
-                s.mp.setStepperVolume(steppers[engine][time[0]]);
+                s.mp.setStepperVolume(steppsIn[engine][0][time[0]]);
             }
 
         }
@@ -67,29 +68,38 @@ void stepperfunktions::mStepper( AudioSample& s, const int* time)
             
             }
             if (s.mp.mSampleStepperMode == 1) {  //-------------sp1-pitch-----------------------------
-                s.mp.PichStepper(steppers[engine][time[0]]);
+                s.mp.PichStepper(steppsIn[engine][0][time[0]]);
+                ph = steppsIn[engine][0][time[0]];
             }
 
 
             if (s.mp.mSampleStepperMode == 4) {//-------------------volume
 
-                s.mp.setStepperVolume(steppers[engine][time[0]]);
-
+                s.mp.setStepperVolume(steppsIn[engine][0][time[0]]);
+              
             }
-        }
+      
 
 
         if (s.mp.mSampleStepperMode == 2) { //------------Slot-delayMix-------------------------
-            s.echo->setDelayMixStepper(steppers[engine][time[0]]);
+
+            s.cutoffsteppermod(steppsIn[engine][0][time[0]]);
+            ph = steppsIn[engine][0][time[0]];
         }
 
         if (s.mp.mSampleStepperMode == 3) {  //------------Slot-lfotime--------------------------
-            s.oscillator.setFrequencyLfoStepper(steppers[engine][time[0]]);
-
+         
+             s.delaysteppermod(steppsIn[engine][0][time[0]]);
         }
-
+  }
 
     }
+    return 0;
+}
+
+double stepperfunktions::getValue()
+{
+    return ph;
 }
 
 

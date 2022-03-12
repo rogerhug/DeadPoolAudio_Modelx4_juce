@@ -38,7 +38,7 @@ mainfunktions::mainfunktions()
     SampelHoldMode::setupComboBox(mainSHCombo);
 
 
-
+    mMainSpnr = 0;
 
 
 
@@ -62,7 +62,7 @@ mainfunktions::mainfunktions()
     TimeSlider.setPopupDisplayEnabled(true, false, this);
     TimeSlider.setTextValueSuffix("Bpm");
     TimeSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 60, 20);
-   // addAndMakeVisible(TimeSlider);
+    addAndMakeVisible(TimeSlider);
     TimeSlider.setLookAndFeel(mlaf);
 
     SeqLenghtSlider.setSliderStyle(juce::Slider::LinearHorizontal);
@@ -88,6 +88,7 @@ mainfunktions::mainfunktions()
 
     addAndMakeVisible(TriggerProgramm10);
 
+ 
     for (int i = 0; i < 10; ++i) {
         addAndMakeVisible(TriggerProgrammM[i]);
         TriggerProgrammM[i].setClickingTogglesState(true);
@@ -113,11 +114,11 @@ mainfunktions::mainfunktions()
 
     mMainSpnr = 0;
     addAndMakeVisible(SamplerEngineTemp);
-
+    SamplerEngine[0].setToggleState(true, juce::dontSendNotification);
     for (int i = 0; i < 7; ++i) {
         addAndMakeVisible(SamplerEngine[i]);
         SamplerEngine[i].setClickingTogglesState(true);
-        SamplerEngine[i].setRadioGroupId(40523);
+        SamplerEngine[i].setRadioGroupId(405231);
         SamplerEngine[i].setColour(juce::TextButton::buttonColourId, juce::Colours::blue);
         SamplerEngine[i].setBounds(1, 30 + i * 29, 50, 29);
         SamplerEngine[0].setButtonText("Kicks");
@@ -381,7 +382,7 @@ void mainfunktions::paint(juce::Graphics& g)
 
 void mainfunktions::resized()
 {
-    chronofunkt.setBounds(100, 0, 200, 20);
+   // chronofunkt.setBounds(100, 0, 200, 20);
     timeLabel.setBounds(10, 610, 600, 20);
     //  timeLabel2.setBounds (200,0, 400, 20);
     //  BankLabel.setBounds(600, 45, 100, 20);
@@ -391,7 +392,7 @@ void mainfunktions::resized()
     //  TriggerSetInit3.setBounds(660, 70, 30, 20);
     TimeComboBox.setBounds(0, 0, 100, 20);
 
-   // TimeSlider.setBounds(70, 0, 140, 20);
+    TimeSlider.setBounds(105, 0, 140, 20);
     latenceSlider.setBounds(100, 0, 160, 20);
     SeqLenghtSlider.setBounds(0, 235, 710, 20);
     //  mainWaveSlider.setBounds(160,250,80,80);
