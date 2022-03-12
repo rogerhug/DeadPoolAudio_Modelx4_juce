@@ -18,9 +18,9 @@ latest build windows10 Vst3 27.2.2022
 
 download Windows setup here::
 
-https://drive.google.com/file/d/1gkj50TJsruW_4L1vabA2osxW0yB41mGf/view?usp=sharing
+https://drive.google.com/file/d/1upwouz5Ccs7YbMjbTxQfzeVZjnWTqcra/view?usp=sharing
 
- install  , Vst3 Plugin ,SampelBank & PresetFolder
+ install  the App x64, Vst3 Pluginx64 ,SampelBank & PresetFolder
 
 include 30 DrumPresets.and more >2000.wav. the First Start with this plugIn in the host //(reaper etc)creates a VST3 Preset Folder
 in C:/yourName/Documents..
@@ -30,6 +30,9 @@ and load from your vst3 host...
 first test i think all right?
 
 cheeers r-hug@gmx.ch
+
+
+
 
 
 
