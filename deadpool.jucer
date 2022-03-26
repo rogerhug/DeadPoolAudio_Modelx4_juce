@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="Ph1hBX" name="DeadPoolAudio_V2" projectType="audioplug" useAppConfig="1"
+              addUsingNamespaceToJuceHeader="1" displaySplashScreen="1" jucerFormatVersion="1"
+              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              pluginManufacturer="hebeisen.soft" maxBinaryFileSize="65536"
+              companyName="hebeisen.soft" companyWebsite="https://github.com/rogerhug/DeadPool-V02_juce">
+  <MAINGROUP id="HQzSpr" name="DeadPoolAudio_V2">
+    <GROUP id="{480F0930-7C26-8520-5233-3DBB1EB480C0}" name="time">
+      <FILE id="eMLq3E" name="timeLines.cpp" compile="1" resource="0" file="Source/timeLines.cpp"/>
+      <FILE id="Uer0Bc" name="timeLines.h" compile="0" resource="0" file="Source/timeLines.h"/>
+    </GROUP>
+    <GROUP id="{A83249CC-BBDE-3460-4D47-99837809F0B7}" name="Source">
+      <FILE id="CTGWrv" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="O0ADhc" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="jocAXM" name="PluginParameters.cpp" compile="1" resource="0"
+            file="Source/PluginParameters.cpp"/>
+      <FILE id="CMd7ud" name="PluginParameters.h" compile="0" resource="0"
+            file="Source/PluginParameters.h"/>
+      <FILE id="mszRpQ" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="d8vzJR" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="eFH4tG" name="rtwtypes.h" compile="0" resource="0" file="Source/rtwtypes.h"/>
+    </GROUP>
+    <GROUP id="{E5254A34-18D6-4BEE-F9F1-E13590F7C0CA}" name="SQ">
+      <FILE id="ij2FkQ" name="Dequeue.h" compile="0" resource="0" file="Source/Dequeue.h"/>
+      <FILE id="Ro5x4a" name="sequencer.cpp" compile="1" resource="0" file="Source/sequencer.cpp"/>
+      <FILE id="jE8t02" name="sequencer.h" compile="0" resource="0" file="Source/sequencer.h"/>
+      <FILE id="Vj2QTk" name="stepperfunktions.cpp" compile="1" resource="0"
+            file="Source/stepperfunktions.cpp"/>
+      <FILE id="hDDhWO" name="stepperfunktions.h" compile="0" resource="0"
+            file="Source/stepperfunktions.h"/>
+      <FILE id="AoTCxb" name="TriggersInit.cpp" compile="1" resource="0"
+            file="Source/TriggersInit.cpp"/>
+      <FILE id="i2IrlZ" name="TriggersInit.h" compile="0" resource="0" file="Source/TriggersInit.h"/>
+    </GROUP>
+    <GROUP id="{8D3C6CF6-40F6-75F7-7810-E760AE646C0E}" name="audiosampel">
+      <FILE id="PE9IbZ" name="Eutils.cpp" compile="1" resource="0" file="Source/Eutils.cpp"/>
+      <FILE id="KRun8I" name="Eutils.h" compile="0" resource="0" file="Source/Eutils.h"/>
+      <FILE id="zFklGr" name="EngineUi.h" compile="0" resource="0" file="Source/EngineUi.h"/>
+      <FILE id="xe4av6" name="playSampelFile.cpp" compile="1" resource="0"
+            file="Source/playSampelFile.cpp"/>
+      <FILE id="PgAhKo" name="playSampelFile.h" compile="0" resource="0"
+            file="Source/playSampelFile.h"/>
+    </GROUP>
+    <GROUP id="{F48E04E8-582C-8712-F078-731549D6E6F1}" name="DspEqualizer">
+      <FILE id="kk3Kb0" name="equ3_c.cpp" compile="1" resource="0" file="DspEqualizer/equ3_c.cpp"/>
+      <FILE id="t8UTOb" name="equ3_c.h" compile="0" resource="0" file="DspEqualizer/equ3_c.h"/>
+      <FILE id="k1ECKs" name="rtwtypes.h" compile="0" resource="0" file="DspEqualizer/rtwtypes.h"/>
+    </GROUP>
+    <GROUP id="{543DE9A4-E877-3402-4AB4-0A580A4D258E}" name="Lfo">
+      <FILE id="avIcdq" name="LfoGen.cpp" compile="1" resource="0" file="Source/LfoGen.cpp"/>
+      <FILE id="oYRoLn" name="LfoGen.h" compile="0" resource="0" file="Source/LfoGen.h"/>
+    </GROUP>
+    <GROUP id="{6BB79B6A-A2DC-2699-8BF7-F37267FC1E78}" name="main">
+      <FILE id="MJ8Dna" name="mainfunktions.cpp" compile="1" resource="0"
+            file="Source/mainfunktions.cpp"/>
+      <FILE id="crdbOU" name="mainfunktions.h" compile="0" resource="0" file="Source/mainfunktions.h"/>
+      <FILE id="VNqu8A" name="mainMix.cpp" compile="1" resource="0" file="Source/mainMix.cpp"/>
+      <FILE id="avIzDz" name="mainMix.h" compile="0" resource="0" file="Source/mainMix.h"/>
+      <FILE id="Ia50gR" name="UVmeter.h" compile="0" resource="0" file="Source/UVmeter.h"/>
+    </GROUP>
+    <GROUP id="{08D7B9B6-31E5-46E4-051F-C99935F0E189}" name="echo">
+      <FILE id="HUiLXk" name="echogenerator.cpp" compile="1" resource="0"
+            file="echo/echogenerator.cpp"/>
+      <FILE id="aXBX88" name="echogenerator.h" compile="0" resource="0" file="echo/echogenerator.h"/>
+    </GROUP>
+    <GROUP id="{95A69006-51E9-87C8-CD1C-5CC74C9A3970}" name="filter">
+      <FILE id="KuUYsO" name="Dc_Blocker.cpp" compile="1" resource="0" file="filter/Dc_Blocker.cpp"/>
+      <FILE id="NV0dsr" name="Dc_Blocker.h" compile="0" resource="0" file="filter/Dc_Blocker.h"/>
+      <FILE id="Lm8Du2" name="discretFilter.cpp" compile="1" resource="0"
+            file="filter/discretFilter.cpp"/>
+      <FILE id="wXBxyT" name="discretFilter.h" compile="0" resource="0" file="filter/discretFilter.h"/>
+      <FILE id="bwyoL9" name="rtwtypes.h" compile="0" resource="0" file="filter/rtwtypes.h"/>
+    </GROUP>
+    <GROUP id="{605EF208-B291-BC91-F12C-8C069A90A8CA}" name="binaryFiles">
+      <FILE id="XVYHKt" name="audioUrlFiles.cpp" compile="1" resource="0"
+            file="binaryFiles/audioUrlFiles.cpp"/>
+      <FILE id="VI05T9" name="audioUrlFiles.h" compile="0" resource="0" file="binaryFiles/audioUrlFiles.h"/>
+      <FILE id="Ex5Lgn" name="binary.cpp" compile="1" resource="0" file="binaryFiles/binary.cpp"/>
+      <FILE id="IVK2v7" name="binary.h" compile="0" resource="0" file="binaryFiles/binary.h"/>
+    </GROUP>
+    <GROUP id="{362A61BA-541A-41F0-0D8B-4DD8E052964A}" name="resampler">
+      <FILE id="GkhHec" name="denormal.h" compile="0" resource="0" file="resampler/denormal.h"/>
+      <FILE id="RaK5ZT" name="heapbuf.h" compile="0" resource="0" file="resampler/heapbuf.h"/>
+      <FILE id="z7vYi2" name="resample.cpp" compile="1" resource="0" file="resampler/resample.cpp"/>
+      <FILE id="SE7ts2" name="resample.h" compile="0" resource="0" file="resampler/resample.h"/>
+      <FILE id="krP42G" name="wdltypes.h" compile="0" resource="0" file="resampler/wdltypes.h"/>
+    </GROUP>
+    <GROUP id="{D38A78E1-7CE3-4F00-2AF2-E8D4494ECDD0}" name="synth">
+      <FILE id="pUdlWX" name="noise.cpp" compile="1" resource="0" file="synth/noise.cpp"/>
+      <FILE id="sVfDLj" name="noise.h" compile="0" resource="0" file="synth/noise.h"/>
+      <FILE id="Shj4bU" name="SynthOscillator.cpp" compile="1" resource="0"
+            file="synth/SynthOscillator.cpp"/>
+      <FILE id="uZYNYW" name="SynthOscillator.h" compile="0" resource="0"
+            file="synth/SynthOscillator.h"/>
+      <FILE id="tApKgV" name="SynthWaveform.cpp" compile="1" resource="0"
+            file="synth/SynthWaveform.cpp"/>
+      <FILE id="duVydV" name="SynthWaveform.h" compile="0" resource="0" file="synth/SynthWaveform.h"/>
+    </GROUP>
+    <GROUP id="{71CB3E62-58F6-46E6-3B7B-5CCA53E268E6}" name="bitcrush">
+      <FILE id="ABjsco" name="bitcrush.cpp" compile="1" resource="0" file="bitcrush/bitcrush.cpp"/>
+      <FILE id="poWlag" name="bitcrush.h" compile="0" resource="0" file="bitcrush/bitcrush.h"/>
+    </GROUP>
+    <GROUP id="{767FA8B2-711A-8050-F326-6D000BE9047D}" name="Limiter">
+      <FILE id="zZYmdu" name="compressor_c.cpp" compile="1" resource="0"
+            file="Limiter/compressor_c.cpp"/>
+      <FILE id="Fsifma" name="compressor_c.h" compile="0" resource="0" file="Limiter/compressor_c.h"/>
+      <FILE id="WDVjR2" name="limiter_c.cpp" compile="1" resource="0" file="Limiter/limiter_c.cpp"/>
+      <FILE id="snw1eO" name="limiter_c.h" compile="0" resource="0" file="Limiter/limiter_c.h"/>
+      <FILE id="GYJ63K" name="rtwtypes.h" compile="0" resource="0" file="Limiter/rtwtypes.h"/>
+    </GROUP>
+    <GROUP id="{46CCF587-D889-D35F-1CC5-5A52A90C8E8E}" name="utils">
+      <FILE id="wjPyTN" name="customLook.h" compile="0" resource="0" file="Source/customLook.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="NewProject"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="NewProject"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../../modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../modules"/>
+        <MODULEPATH id="juce_core" path="../../../modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../modules"/>
+        <MODULEPATH id="juce_events" path="../../../modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <VS2019 targetFolder="Builds/VisualStudio2019">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="../../juce"/>
+        <MODULEPATH id="juce_gui_basics" path="../../juce"/>
+        <MODULEPATH id="juce_graphics" path="../../juce"/>
+        <MODULEPATH id="juce_events" path="../../juce"/>
+        <MODULEPATH id="juce_data_structures" path="../../juce"/>
+        <MODULEPATH id="juce_core" path="../../juce"/>
+        <MODULEPATH id="juce_audio_utils" path="../../juce"/>
+        <MODULEPATH id="juce_audio_processors" path="../../juce"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../juce"/>
+        <MODULEPATH id="juce_audio_formats" path="../../juce"/>
+        <MODULEPATH id="juce_audio_devices" path="../../juce"/>
+        <MODULEPATH id="juce_audio_basics" path="../../juce"/>
+      </MODULEPATHS>
+    </VS2019>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
+</JUCERPROJECT>
